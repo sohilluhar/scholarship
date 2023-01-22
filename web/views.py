@@ -5,12 +5,14 @@ from random import randint
 
 import pyrebase
 from cryptography.fernet import Fernet
+from django.core import serializers
+import json
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from web.form import UserForm
-from web.models import User
+from web.models import User, UserProfile
 from . import Common
 from . import PyConfig
 from .SendMail import sendmail
@@ -405,26 +407,24 @@ def verify(request):
         mail = request.POST.get('mail')
         password = request.POST.get('password')
 
-        db = connect_firebase()
-        user = db.child("users").child(mail).get()
+        # db = connect_firebase()
+        # user = db.child("users").child(mail).get()
 
-        if not user.val():
+        if not User.objects.filter(phone=mail).exists():
             return render(request, 'redirecthome.html',
                           {"swicon": "error", "swtitle": "Error", "swmsg": "User does not exists", "path": "login"})
-        elif password == user.val().get("password"):
-            c = {'user': user.val()}
-            #
-            # req.session['currentUser'] = user
-            # req.session['isLogin'] = True
-
-            request.session['currentUser'] = user.val()
-            request.session['isLogin'] = True
-
-            return HttpResponseRedirect('/')
         else:
-            return render(request, 'redirecthome.html',
-                          {"swicon": "error", "swtitle": "Error", "swmsg": "Invalid Password",
-                           "path": "login"})
+            user = User.objects.get(phone=mail)
+            if password == user.password:
+
+                request.session['currentUser'] = user.phone
+                request.session['isLogin'] = True
+
+                return HttpResponseRedirect('/')
+            else:
+                return render(request, 'redirecthome.html',
+                              {"swicon": "error", "swtitle": "Error", "swmsg": "Invalid Password",
+                               "path": "login"})
     else:
         # c = {'user': req.session['currentUser'].val()}
         return HttpResponseRedirect('/')
@@ -676,6 +676,7 @@ phone       =    phone   ,
 adhar_no    =   adhar_no    ,
 profilefill =0
     )
+    # user = User.objects.create(**userdict)
     try:
             user.full_clean()
             user.save()
@@ -831,29 +832,29 @@ def viewschemedetails(request, pk):
 # User Profiles#
 def profile_personalDetails(request):
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
+        person=UserProfile()
+        userid=request.session['currentUser']
+        print(userid)
+        profilefill=0
 
-        db = connect_firebase()
-        accno = ""
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
         try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
-            cipher = Fernet(Common.encyptionkey)
-            accno = cipher.decrypt(userprofile.get("account_number").encode()).decode()
-        except:
-            print("Error")
+            if(UserProfile.objects.filter(phone_number=userid).exists()):
+                person = UserProfile.objects.get(phone_number=userid)
+                profilefill = User.objects.get(phone=userid).profilefill
+        except Exception as e:
+            print(str(e))
+            return render(request, 'redirecthome.html',
+                          {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
+        print("profilefill ",profilefill)
+        if (profilefill != "100"):
 
-        if (request.session['currentUser'].get("profilefill") != "100"):
             return render(request, 'user_profileDetails.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser'],
-                           "accno": accno})
+                          {"userprofile": person, "profilefill": profilefill,
+                           })
         else:
             return render(request, 'user_completeprofile.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser'],
-                           "accno": accno
+                          {"userprofile": person, "profilefill": profilefill
                            })
-
     else:
         return render(request, 'redirecthome.html',
                       {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
@@ -861,23 +862,26 @@ def profile_personalDetails(request):
 
 def profile_familyDetails(request):
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
 
-        db = connect_firebase()
-
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
+        userprofile = UserProfile()
+        userid = request.session['currentUser']
+        profilefill=0
         try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
-        except:
-            print("Error")
+            if (UserProfile.objects.filter(phone_number=userid).exists()):
+                userprofile = UserProfile.objects.get(phone_number=userid)
+                profilefill = User.objects.get(phone=userid).profilefill
+        except Exception as e:
+            print(str(e))
+            return render(request, 'redirecthome.html',
+                          {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
 
-        if (request.session['currentUser'].get("profilefill") != "100"):
+        if (profilefill != "100"):
             return render(request, 'user_familyDetails.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser']})
+                          {"userprofile": userprofile, "profilefill": profilefill,
+                           })
         else:
             return render(request, 'user_completeprofile.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser'],
+                          {"userprofile": userprofile, "profilefill": profilefill,
                            })
     else:
         return render(request, 'redirecthome.html',
@@ -886,25 +890,26 @@ def profile_familyDetails(request):
 
 def profile_education(request):
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
+        userprofile = UserProfile()
+        userid = request.session['currentUser']
+        profilefill=0
 
-        db = connect_firebase()
-
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
         try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
-        except:
-            print("Error")
+            if (UserProfile.objects.filter(phone_number=userid).exists()):
+                userprofile = UserProfile.objects.get(phone_number=userid)
+                profilefill = User.objects.get(phone=userid).profilefill
+        except Exception as e:
+            print(str(e))
+            return render(request, 'redirecthome.html',
+                          {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
 
-        if (request.session['currentUser'].get("profilefill") != "100"):
+        if (profilefill != "100"):
             return render(request, 'user_education.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser']})
+                          {"userprofile": userprofile, "profilefill": profilefill})
         else:
             return render(request, 'redirecthome.html',
                           {"swicon": "error", "swtitle": "Profile Submitted", "swmsg": "You cant change any details",
                            "path": ""})
-
     else:
         return render(request, 'redirecthome.html',
                       {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
@@ -912,24 +917,25 @@ def profile_education(request):
 
 def profile_doc(request):
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
+        userprofile = UserProfile()
+        userid = request.session['currentUser']
+        profilefill=0
 
-        db = connect_firebase()
-
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
         try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
-        except:
-            print("Error")
+            if (UserProfile.objects.filter(phone_number=userid).exists()):
+                userprofile = UserProfile.objects.get(phone_number=userid)
+        except Exception as e:
+            print(str(e))
+            return render(request, 'redirecthome.html',
+                          {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
 
-        if (request.session['currentUser'].get("profilefill") != "100"):
+        if (profilefill != "100"):
             return render(request, 'user_doc.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser'],
+                          {"userprofile": userprofile, "profilefill": profilefill,
                            "config": PyConfig.config1})
         else:
             return render(request, 'user_completeprofile.html',
-                          {"userprofile": userprofile, "currentuser": request.session['currentUser'],
+                          {"userprofile": userprofile, "profilefill": profilefill,
                            })
     else:
 
@@ -961,26 +967,21 @@ def saveuserpersonalinfo(req):
     fill = req.POST['fill']
     save_draft = req.POST['saveasdraft']
 
-    db = connect_firebase()
-
-    cipher = Fernet(Common.encyptionkey)
-    encaccountnum = cipher.encrypt(account_number.encode())
-    print(encaccountnum)
-
     newdata = {
         "sname": surname, "fname": first_name, "lname": last_name, "dob": dob, "age": age, "gender": gender,
         "email": email, "phone": phone, "parent_phone": parent_phone,
         "religious": religious, "cast": cast, "annual_income": annual_income,
-        "account_number": encaccountnum.decode(), "bank_name": bank_name, "ifsc_code": ifsc_code.upper(),
+        "account_number": account_number, "bank_name": bank_name, "ifsc_code": ifsc_code.upper(),
         "nameinpassbook": nameinpassbook, "parent_status": parent_status
 
     }
-
-    db.child("UserProfile").child(str(phone)).update(
-        newdata
+    userid = req.session['currentUser']
+    user, created = UserProfile.objects.update_or_create(
+        phone_number=userid,
+        defaults=newdata
     )
 
-    db.child("users").child(str(phone)).child("profilefill").set(fill)
+    User.objects.filter(phone=phone).update(profilefill=fill)
     if save_draft == "1":
         return render(req, 'redirecthome.html',
                       {"swicon": "success", "swtitle": "Done", "swmsg": "Personal Details Saved Successfully.",
@@ -1013,8 +1014,9 @@ def saveuserfamilyinfo(req):
 
     fill = req.POST['fill']
     save_draft = req.POST['saveasdraft']
+    userid = req.session['currentUser']
 
-    db = connect_firebase()
+    print("fill ",fill)
 
     newdata = {
         "address": address, "pincode": pincode,
@@ -1024,12 +1026,12 @@ def saveuserfamilyinfo(req):
         "motherincome": motherincome, "totalfamilymember": totalfamilymember, "totalearningmember": totalearningmember,
         "family_income": family_income
     }
-
-    db.child("UserProfile").child(req.session['currentUser'].get("phone")).update(
-        newdata
+    user, created = UserProfile.objects.update_or_create(
+        phone_number=userid,
+        defaults=newdata
     )
 
-    db.child("users").child(req.session['currentUser'].get("phone")).child("profilefill").set(fill)
+    User.objects.filter(phone=userid).update(profilefill=fill)
     if save_draft == "1":
         return render(req, 'redirecthome.html',
                       {"swicon": "success", "swtitle": "Done", "swmsg": "Family Details Saved Successfully.",
@@ -1082,7 +1084,6 @@ def saveusereducation(req):
     fill = req.POST['fill']
     save_draft = req.POST['saveasdraft']
 
-    db = connect_firebase()
 
     newdata = {
         "collegename": collegename, "collegeaddress": collegeaddress, "collegeheadname": collegeheadname,
@@ -1109,13 +1110,13 @@ def saveusereducation(req):
 
         "achievement": achievement
     }
-
-    db.child("UserProfile").child(req.session['currentUser'].get("phone")).update(
-        newdata
+    phonekey=req.session['currentUser']
+    user, created = UserProfile.objects.update_or_create(
+        phone_number=phonekey,
+        defaults=newdata
     )
 
-    db.child("users").child(req.session['currentUser'].get("phone")).child("profilefill").set(fill)
-
+    User.objects.filter(phone=phonekey).update(profilefill=fill)
     if save_draft == "1":
         return render(req, 'redirecthome.html',
                       {"swicon": "success", "swtitle": "Done", "swmsg": "Education Details Saved Successfully.",
@@ -1162,12 +1163,14 @@ def savedocuments(req):
         "docaddressurl": docaddressurl, "docincomeurl": docincomeurl, "doccourse1url": doccourse1url,
         "doccourse2url": doccourse2url, "docpassbookurl": docpassbookurl
     }
+    phonekey=req.session['currentUser']
 
-    db.child("UserProfile").child(req.session['currentUser'].get("phone")).update(
-        newdata
+    user, created = UserProfile.objects.update_or_create(
+        phone_number=phonekey,
+        defaults=newdata
     )
 
-    db.child("users").child(req.session['currentUser'].get("phone")).child("profilefill").set(fill)
+    User.objects.filter(phone=phonekey).update(profilefill=fill)
     if save_draft == "1":
         return render(req, 'redirecthome.html',
                       {"swicon": "success", "swtitle": "Done", "swmsg": "Documents Saved Successfully.",
@@ -1180,16 +1183,17 @@ def savedocuments(req):
 
 def user_completeprofile(request):
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
+        userprofile = UserProfile()
+        userphone = request.session['currentUser']
 
-        db = connect_firebase()
 
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
         try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
-        except:
-            print("Error")
+            if (UserProfile.objects.filter(phone_number=userphone).exists()):
+                userprofile = UserProfile.objects.get(phone_number=userphone)
+        except Exception as e:
+            print(str(e))
+            return render(request, 'redirecthome.html',
+                          {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
 
         if request.session['currentUser'].get("profilefill") == "100":
             return render(request, 'user_completeprofileform.html',

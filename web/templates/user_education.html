@@ -40,9 +40,9 @@
 
                                     <div class="progress mb-3">
                                         <div class="progress-bar bg-success" role="progressbar"
-                                             aria-valuenow="{{ currentuser.profilefill }}" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: {{ currentuser.profilefill }}%">
-                                            <span>{{ currentuser.profilefill }}% Complete</span>
+                                             aria-valuenow="{{profilefill |default:''}}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ profilefill |default:''}}%">
+                                            <span>{{profilefill |default:''}}% Complete</span>
                                         </div>
                                     </div>
                                 </div>
@@ -67,7 +67,7 @@
                                                         <label for="collegename"><span class="text-danger">*</span>
                                                             College Name</label>
                                                         <input type="text" name="collegename" class="form-control"
-                                                               id="collegename" value="{{ userprofile.collegename }}"
+                                                               id="collegename" value="{{ userprofile.collegename|default:''}}"
                                                                placeholder="Enter college name"
                                                         >
                                                     </div>
@@ -79,7 +79,7 @@
                                                             Principal/Director/Head of College Name</label>
                                                         <input type="text" name="collegeheadname" class="form-control"
                                                                id="collegeheadname"
-                                                               value="{{ userprofile.collegeheadname }}"
+                                                               value="{{ userprofile.collegeheadname |default:''}}"
                                                                placeholder="Principal/Director/Head of College Name"
                                                         >
                                                     </div>
@@ -93,7 +93,7 @@
                                                                   name="collegeaddress" id="collegeaddress"
                                                                   placeholder="Enter college address"
 
-                                                        >{{ userprofile.collegeaddress }}</textarea>
+                                                        >{{ userprofile.collegeaddress |default:''}}</textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -103,7 +103,7 @@
                                                         <label for="coursename"><span class="text-danger">*</span>
                                                             Current Course Name</label>
                                                         <input type="text" name="coursename" class="form-control"
-                                                               id="coursename" value="{{ userprofile.coursename }}"
+                                                               id="coursename" value="{{ userprofile.coursename |default:''}}"
                                                                placeholder="Enter course name eg: BSc-IT"
                                                         >
                                                     </div>
@@ -114,7 +114,7 @@
                                                             Duration of Course</label>
                                                         <input type="number" name="courseduration" class="form-control"
                                                                id="courseduration"
-                                                               value="{{ userprofile.courseduration }}"
+                                                               value="{{ userprofile.courseduration |default:''}}"
                                                                placeholder="Enter course duration eg: 4" required
                                                         >
                                                     </div>
@@ -127,7 +127,7 @@
                                                         <input type="number" name="courseacademicyear"
                                                                class="form-control"
                                                                id="courseacademicyear"
-                                                               value="{{ userprofile.courseacademicyear }}"
+                                                               value="{{ userprofile.courseacademicyear |default:''}}"
                                                                placeholder="Enter Academic Year: 2022"
                                                                required
                                                         >
@@ -142,7 +142,7 @@
                                                         <input type="text" name="lastcoursename"
                                                                class="form-control"
                                                                id="lastcoursename"
-                                                               value="{{ userprofile.lastcoursename }}"
+                                                               value="{{ userprofile.lastcoursename |default:''}}"
                                                                placeholder="Enter  Last Class attended eg: SSC/HSC/Any Other"
                                                                required
                                                         >
@@ -157,7 +157,7 @@
                                                         <input type="number" name="lastcourseacademicyear"
                                                                class="form-control"
                                                                id="courseacademicyear"
-                                                               value="{{ userprofile.lastcourseacademicyear }}"
+                                                               value="{{ userprofile.lastcourseacademicyear |default:''}}"
                                                                placeholder="Enter Last Class Academic Yea: 2021"
                                                                required
                                                         >
@@ -188,7 +188,7 @@
                                                             Total
                                                             Fees</label>
                                                         <input type="number" name="coursefees" class="form-control"
-                                                               id="coursefees" value="{{ userprofile.coursefees }}"
+                                                               id="coursefees" value="{{ userprofile.coursefees |default:''}}"
                                                                placeholder="Enter  total annual fees of current year"
                                                                required
                                                         >
@@ -201,7 +201,7 @@
                                                             Fees Paid</label>
                                                         <input type="number" name="coursefeespaid" class="form-control"
                                                                id="coursefeespaid"
-                                                               value="{{ userprofile.coursefeespaid }}"
+                                                               value="{{ userprofile.coursefeespaid |default:''}}"
                                                                placeholder="Enter  total fees paid"
                                                                required
                                                         >
@@ -215,7 +215,7 @@
                                                         <input type="number" name="coursefeesrequired"
                                                                class="form-control"
                                                                id="coursefeesrequired"
-                                                               value="{{ userprofile.coursefeesrequired }}"
+                                                               value="{{ userprofile.coursefeesrequired |default:''}}"
                                                                placeholder="Enter  total fees Required"
                                                                required
                                                         >
@@ -251,7 +251,7 @@
                                                             College/School Name</label>
                                                         <input type="text" name="course1board" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course1board }}" id="course1board"
+                                                               value="{{ userprofile.course1board |default:''}}" id="course1board"
                                                                placeholder="Enter College/School name ">
                                                     </div>
                                                 </div>
@@ -262,7 +262,7 @@
                                                             Medium</label>
                                                         <input type="text" name="course1medium" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course1medium }}"
+                                                               value="{{ userprofile.course1medium |default:''}}"
                                                                id="course1medium"
                                                                placeholder="Enter Medium ">
                                                     </div>
@@ -275,7 +275,7 @@
                                                             Marks Obtained</label>
                                                         <input type="text" name="course1marks" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course1marks }}"
+                                                               value="{{ userprofile.course1marks |default:''}}"
                                                                id="course1marks"
                                                                placeholder="Enter Marks ">
                                                     </div>
@@ -287,7 +287,7 @@
                                                             Marks Out of</label>
                                                         <input type="text" name="course1markstotal" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course1markstotal }}"
+                                                               value="{{ userprofile.course1markstotal |default:''}}"
                                                                id="course1markstotal"
                                                                placeholder="Enter Total Marks ">
                                                     </div>
@@ -298,7 +298,7 @@
                                                         </label>
                                                         <input type="number" name="course1year" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course1year }}" id="course1year"
+                                                               value="{{ userprofile.course1year |default:''}}" id="course1year"
                                                                placeholder="Enter year">
                                                     </div>
                                                 </div>
@@ -310,7 +310,7 @@
                                                             Per. (%)</label>
                                                         <input type="text" name="course1per" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course1per }}" id="course1per"
+                                                               value="{{ userprofile.course1per |default:''}}" id="course1per"
                                                                placeholder="Enter percentage ">
                                                     </div>
                                                 </div>
@@ -324,7 +324,7 @@
 
                                                         <input type="text" name="course2name" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2name }}" id="course2name"
+                                                               value="{{ userprofile.course2name |default:''}}" id="course2name"
                                                                placeholder="HSC or Diploma">
                                                     </div>
                                                 </div>
@@ -333,7 +333,7 @@
 
                                                         <input type="text" name="course2board" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2board }}" id="course2board"
+                                                               value="{{ userprofile.course2board |default:''}}" id="course2board"
                                                                placeholder="Enter College/School name ">
                                                     </div>
                                                 </div>
@@ -343,7 +343,7 @@
 
                                                         <input type="text" name="course2medium" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2medium }}"
+                                                               value="{{ userprofile.course2medium |default:''}}"
                                                                id="course2medium"
                                                                placeholder="Enter Medium ">
                                                     </div>
@@ -355,7 +355,7 @@
 
                                                         <input type="text" name="course2marks" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2marks }}"
+                                                               value="{{ userprofile.course2marks |default:''}}"
                                                                id="course2marks"
                                                                placeholder="Enter Marks ">
                                                     </div>
@@ -365,7 +365,7 @@
 
                                                         <input type="text" name="course2markstotal" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2markstotal }}"
+                                                               value="{{ userprofile.course2markstotal |default:''}}"
                                                                id="course2markstotal"
                                                                placeholder="Enter Total Marks ">
                                                     </div>
@@ -375,7 +375,7 @@
 
                                                         <input type="number" name="course2year" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2year }}" id="course2year"
+                                                               value="{{ userprofile.course2year |default:''}}" id="course2year"
                                                                placeholder="Enter year">
                                                     </div>
                                                 </div>
@@ -386,7 +386,7 @@
 
                                                         <input type="text" name="course2per" class="form-control"
                                                                required
-                                                               value="{{ userprofile.course2per }}" id="course2per"
+                                                               value="{{ userprofile.course2per |default:''}}" id="course2per"
                                                                placeholder="Enter percentage ">
                                                     </div>
                                                 </div>
@@ -409,7 +409,7 @@
                                                                   name="achievement" id="achievement"
                                                                   placeholder="Enter achievements if any"
 
-                                                        >{{ userprofile.achievement }}</textarea>
+                                                        >{{ userprofile.achievement |default:''}}</textarea>
                                                     </div>
                                                 </div>
                                             </div>

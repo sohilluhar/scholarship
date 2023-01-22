@@ -40,9 +40,9 @@
 
                                     <div class="progress mb-3">
                                         <div class="progress-bar bg-success" role="progressbar"
-                                             aria-valuenow="{{ currentuser.profilefill }}" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: {{ currentuser.profilefill }}%">
-                                            <span>{{ currentuser.profilefill }}% Complete</span>
+                                             aria-valuenow="{{ profilefill |default:''}}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ profilefill |default:''}}%">
+                                            <span>{{ profilefill |default:''}}% Complete</span>
                                         </div>
                                     </div>
                                 </div>
@@ -69,14 +69,14 @@
                                                                   name="address" id="address"
                                                                   placeholder="Enter address"
 
-                                                        >{{ userprofile.address }}</textarea>
+                                                        >{{ userprofile.address |default:''}}</textarea>
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
                                                     <div class="form-group">
                                                         <label for="pincode">Pin Code</label>
                                                         <input type="number" name="pincode" class="form-control"
-                                                               id="pincode" value="{{ userprofile.pincode }}"
+                                                               id="pincode" value="{{ userprofile.pincode |default:''}}"
                                                         >
                                                     </div>
                                                 </div>
@@ -108,7 +108,7 @@
                                                         <label for="fathername">Father Name</label>
                                                         <input type="text" name="fathername" class="form-control"
 
-                                                               value="{{ userprofile.fathername }}" id="fathername"
+                                                               value="{{ userprofile.fathername |default:''}}" id="fathername"
                                                                placeholder="Enter father's name">
                                                     </div>
                                                 </div>
@@ -118,7 +118,7 @@
                                                         <input type="text" name="father_occupation" class="form-control"
                                                                id="father_occupation"
 
-                                                               value="{{ userprofile.fatheroccupation }}"
+                                                               value="{{ userprofile.fatheroccupation |default:''}}"
                                                                placeholder="Enter father's occupation">
                                                     </div>
                                                 </div>
@@ -150,7 +150,7 @@
                                                         <label for="mothername">Mother Name</label>
                                                         <input type="text" name="mothername" class="form-control"
 
-                                                               value="{{ userprofile.mothername }}"
+                                                               value="{{ userprofile.mothername |default:''}}"
                                                                id="mothername" placeholder="Enter mother's name">
                                                     </div>
                                                 </div>
@@ -160,7 +160,7 @@
                                                         <input type="text" name="mother_occupation" class="form-control"
                                                                id="mother_occupation"
 
-                                                               value="{{ userprofile.motheroccupation }}"
+                                                               value="{{ userprofile.motheroccupation |default:''}}"
                                                                placeholder="Enter mother's occupation">
                                                     </div>
                                                 </div>
@@ -183,7 +183,7 @@
                                                         <input type="number" name="totalfamilymember"
                                                                class="form-control"
 
-                                                               value="{{ userprofile.totalfamilymember }}"
+                                                               value="{{ userprofile.totalfamilymember |default:''}}"
                                                                id="totalfamilymember"
                                                                placeholder="Enter Total Number of Family Member"
                                                                required>
@@ -196,7 +196,7 @@
                                                         <input type="number" name="totalearningmember"
                                                                class="form-control"
 
-                                                               value="{{ userprofile.totalearningmember }}"
+                                                               value="{{ userprofile.totalearningmember |default:''}}"
                                                                id="totalearningmember"
                                                                placeholder="Enter Total Number of  Earning Member"
                                                                required>
@@ -207,7 +207,7 @@
                                                         <label for="family_income">Family Monthly Income</label>
                                                         <input type="number" name="family_income" class="form-control"
 
-                                                               value="{{ userprofile.family_income }}"
+                                                               value="{{ userprofile.family_income |default:''}}"
                                                                id="family_income"
                                                                placeholder="Enter Family Monthly Income" required>
                                                     </div>
@@ -266,8 +266,8 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
 <script>
 
-    document.getElementById("fatheralive").value = "{{userprofile.fatheralive}}";
-    document.getElementById("motheralive").value = "{{userprofile.motheralive}}";
+    document.getElementById("fatheralive").value = "{{userprofile.fatheralive|default:''}}";
+    document.getElementById("motheralive").value = "{{userprofile.motheralive|default:''}}";
 
 
     function changeval() {

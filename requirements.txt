@@ -1,0 +1,5 @@
+django
+gunicorn
+pyrebase4
+whitenoise
+cryptography

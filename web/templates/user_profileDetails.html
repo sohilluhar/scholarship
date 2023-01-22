@@ -40,9 +40,9 @@
 
                                     <div class="progress mb-3">
                                         <div class="progress-bar bg-success" role="progressbar"
-                                             aria-valuenow="{{ currentuser.profilefill }}" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: {{ currentuser.profilefill }}%">
-                                            <span>{{ currentuser.profilefill }}% Complete</span>
+                                             aria-valuenow="{{ profilefill |default:''}}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ profilefill |default:''}}%">
+                                            <span>{{profilefill |default:''}}% Complete</span>
                                         </div>
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
                                                         <label for="sname">Surname</label>
                                                         <input type="text" name="sname" class="form-control" id="sname"
                                                                placeholder="Enter Surname "
-                                                               value="{{ userprofile.sname }}">
+                                                               value="{{ userprofile.sname |default:'' |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
@@ -77,7 +77,7 @@
                                                         <label for="fname">First Name</label>
                                                         <input type="text" name="fname" class="form-control" id="fname"
                                                                placeholder="Enter First Name"
-                                                               value="{{ userprofile.fname }}">
+                                                               value="{{ userprofile.fname |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
@@ -85,7 +85,7 @@
                                                         <label for="lname">Last Name</label>
                                                         <input type="text" name="lname" class="form-control" id="lname"
                                                                placeholder="Enter Last Name"
-                                                               value="{{ userprofile.lname }}">
+                                                               value="{{ userprofile.lname |default:''}}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -94,17 +94,17 @@
                                                     <div class="form-group">
                                                         <label for="dob">DOB</label>
                                                         <input type="text" name="dob" class="form-control" id="dob"
-                                                               placeholder="Select DOB" value="{{ userprofile.dob }}">
+                                                               placeholder="Select DOB" value="{{ userprofile.dob |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
                                                     <div class="form-group">
                                                         <label for="age">Age</label>
                                                         <input type="text" name="age" class="form-control" id="age"
-                                                               value="{{ userprofile.age }}"
+                                                               value="{{ userprofile.age |default:''}}"
                                                                disabled>
                                                         <input type="text" name="age1" class="form-control" id="age1"
-                                                               value="{{ userprofile.age }}"
+                                                               value="{{ userprofile.age |default:''}}"
                                                                hidden>
                                                     </div>
                                                 </div>
@@ -134,20 +134,20 @@
                                                     <div class="form-group">
                                                         <label for="email">Email</label>
                                                         <input type="text" name="email" class="form-control" id="email"
-                                                               disabled
-                                                               value="{{ currentuser.mail }}">
+
+                                                               value="{{ currentuser.mail |default:''}}">
                                                         <input type="text" name="email" class="form-control" id="email"
                                                                hidden
-                                                               value="{{ currentuser.mail }}">
+                                                               value="{{ currentuser.mail |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
                                                     <div class="form-group">
                                                         <label for="phone">Phone Number</label>
                                                         <input type="text" name="phone" class="form-control" id="phone"
-                                                               disabled value="{{ currentuser.phone }}">
+                                                                value="{{ currentuser.phone |default:''}}">
                                                         <input type="text" name="phone" class="form-control" id="phone"
-                                                               hidden value="{{ currentuser.phone }}">
+                                                               hidden value="{{ currentuser.phone |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
@@ -156,7 +156,7 @@
                                                         <input type="text" name="parent_phone" class="form-control"
                                                                id="parent_phone"
                                                                placeholder="Enter Parent Phone Number"
-                                                               value="{{ userprofile.parent_phone }}">
+                                                               value="{{ userprofile.parent_phone |default:''}}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -218,7 +218,7 @@
                                                         <input type="number" name="anual_income" class="form-control"
                                                                id="anual_income"
                                                                placeholder="Enter Family Annual Income" min="0"
-                                                               value="{{ userprofile.annual_income }}">
+                                                               value="{{ userprofile.annual_income |default:''}}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -239,7 +239,7 @@
                                                         <input type="text" name="nameinpassbook" class="form-control"
                                                                id="nameinpassbook"
                                                                placeholder="Enter your name as per banks passbook"
-                                                               value="{{ userprofile.nameinpassbook }}">
+                                                               value="{{ userprofile.nameinpassbook |default:''}}">
                                                     </div>
                                                 </div>
 
@@ -248,7 +248,7 @@
                                                         <label for="account_number">Account Number</label>
                                                         <input type="number" name="account_number" class="form-control"
                                                                id="account_number" placeholder="Enter Account Number"
-                                                               value="{{ accno }}">
+                                                               value="{{ accno |default:''}}">
                                                     </div>
                                                 </div>
 
@@ -353,7 +353,7 @@
                                                         <label for="ifsc_code">IFSC Code</label>
                                                         <input type="text" name="ifsc_code" class="form-control"
                                                                id="ifsc_code" placeholder="IFSC Code"
-                                                               value="{{ userprofile.ifsc_code }}">
+                                                               value="{{ userprofile.ifsc_code |default:''}}">
                                                     </div>
                                                 </div>
 
@@ -410,11 +410,11 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
 <script>
 
-    document.getElementById("gender").value = "{{userprofile.gender}}";
-    document.getElementById("religious").value = "{{userprofile.religious}}";
-    document.getElementById("cast").value = "{{userprofile.cast}}";
-    document.getElementById("bank_name").value = "{{userprofile.bank_name}}";
-    document.getElementById("ParentStatus").value = "{{userprofile.parent_status}}";
+    document.getElementById("gender").value = "{{userprofile.gender|default:''}}";
+    document.getElementById("religious").value = "{{userprofile.religious|default:''}}";
+    document.getElementById("cast").value = "{{userprofile.cast|default:''}}";
+    document.getElementById("bank_name").value = "{{userprofile.bank_name|default:''}}";
+    document.getElementById("ParentStatus").value = "{{userprofile.parent_status|default:''}}";
 
     var today = moment();
     {#document.getElementById("dob").value = today.format('DD-MMMM-YYYY');#}

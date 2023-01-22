@@ -62,9 +62,9 @@
 
                                     <div class="progress mb-3">
                                         <div class="progress-bar bg-success" role="progressbar"
-                                             aria-valuenow="{{ currentuser.profilefill }}" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: {{ currentuser.profilefill }}%">
-                                            <span>{{ currentuser.profilefill }}% Complete</span>
+                                             aria-valuenow="{{ currentuser.profilefill |default:''}}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ currentuser.profilefill |default:''}}%">
+                                            <span>{{ currentuser.profilefill |default:''}}% Complete</span>
                                         </div>
                                     </div>
                                 </div>
@@ -170,7 +170,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('docphotoidfile','{{ currentuser.phone }}-docphotoproof','docphotoidurl','docphotoidview')">
+                                                                            onclick="uploadimage('docphotoidfile','{{ currentuser.phone |default:''}}-docphotoproof','docphotoidurl','docphotoidview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -273,7 +273,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('docageprooffile','{{ currentuser.phone }}-docageproof','docageproofurl','docageproofview')">
+                                                                            onclick="uploadimage('docageprooffile','{{ currentuser.phone |default:''}}-docageproof','docageproofurl','docageproofview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -328,7 +328,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('docpassbookfile','{{ currentuser.phone }}-docpassbook','docpassbookurl','docpassbookview')">
+                                                                            onclick="uploadimage('docpassbookfile','{{ currentuser.phone |default:''}}-docpassbook','docpassbookurl','docpassbookview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -369,7 +369,7 @@
 
                                                                 <input type="text" class="form-control"
 
-                                                                       disabled value="{{ userprofile.course1name }}">
+                                                                       disabled value="{{ userprofile.course1name |default:''}}">
 
                                                             </div>
 
@@ -392,7 +392,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('doccourse1file','{{ currentuser.phone }}-doccourse1','doccourse1url','doccourse1view')">
+                                                                            onclick="uploadimage('doccourse1file','{{ currentuser.phone |default:''}}-doccourse1','doccourse1url','doccourse1view')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -418,7 +418,7 @@
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control" disabled
-                                                                       value="{{ userprofile.course2name }}">
+                                                                       value="{{ userprofile.course2name |default:''}}">
 
                                                             </div>
 
@@ -441,7 +441,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('doccourse2file','{{ currentuser.phone }}-doccourse2','doccourse2url','doccourse2view')">
+                                                                            onclick="uploadimage('doccourse2file','{{ currentuser.phone |default:''}}-doccourse2','doccourse2url','doccourse2view')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -467,7 +467,7 @@
                                             {#                                                            <div class="form-group">#}
                                             {##}
                                             {#                                                                <input type="text" class="form-control" disabled#}
-                                            {#                                                                       value="{{ userprofile.course3name }}">#}
+                                            {#                                                                       value="{{ userprofile.course3name |default:''}}">#}
                                             {##}
                                             {#                                                            </div>#}
                                             {##}
@@ -490,7 +490,7 @@
                                             {#                                                                <div class="input-group">#}
                                             {##}
                                             {#                                                                    <button type="button" class="btn btn-info"#}
-                                            {#                                                                            onclick="uploadimage('doccourse3file','{{ currentuser.phone }}-doccourse3','doccourse3url','doccourse3view')">#}
+                                            {#                                                                            onclick="uploadimage('doccourse3file','{{ currentuser.phone |default:''}}-doccourse3','doccourse3url','doccourse3view')">#}
                                             {#                                                                        Upload#}
                                             {#                                                                    </button>#}
                                             {#                                                                </div>#}
@@ -594,7 +594,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('docadmissionfile','{{ currentuser.phone }}-docadmissionsproof','docadmissionurl','docadmissionview')">
+                                                                            onclick="uploadimage('docadmissionfile','{{ currentuser.phone |default:''}}-docadmissionsproof','docadmissionurl','docadmissionview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -688,7 +688,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('doccurrentfeefile','{{ currentuser.phone }}-doccurrentfeesproof','doccurrentfeeurl','doccurrentfeeview')">
+                                                                            onclick="uploadimage('doccurrentfeefile','{{ currentuser.phone |default:''}}-doccurrentfeesproof','doccurrentfeeurl','doccurrentfeeview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -799,7 +799,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('docaddressfile','{{ currentuser.phone }}-docaddressproof','docaddressurl','docaddressview')">
+                                                                            onclick="uploadimage('docaddressfile','{{ currentuser.phone |default:''}}-docaddressproof','docaddressurl','docaddressview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -899,7 +899,7 @@
                                                                 <div class="input-group">
 
                                                                     <button type="button" class="btn btn-info"
-                                                                            onclick="uploadimage('docincomefile','{{ currentuser.phone }}-docincomeproof','docincomeurl','docincomeview')">
+                                                                            onclick="uploadimage('docincomefile','{{ currentuser.phone |default:''}}-docincomeproof','docincomeurl','docincomeview')">
                                                                         Upload
                                                                     </button>
                                                                 </div>
@@ -931,11 +931,11 @@
                                                     <div class="card-body">
                                                         <dl>
                                                             <dd>I <span
-                                                                    class="text-bold">{{ userprofile.fname }} {{ userprofile.lname }} {{ userprofile.sname }}</span>
+                                                                    class="text-bold">{{ userprofile.fname |default:''}} {{ userprofile.lname |default:''}} {{ userprofile.sname |default:''}}</span>
                                                                 age
-                                                                <span class="text-bold">{{ userprofile.age }}</span>
+                                                                <span class="text-bold">{{ userprofile.age |default:''}}</span>
                                                                 years, resident of <span
-                                                                        class="text-bold">{{ userprofile.address }}</span>
+                                                                        class="text-bold">{{ userprofile.address |default:''}}</span>
                                                                 of hereby declare that the information given above and
                                                                 in the uploaded documents is true to the best of my
                                                                 knowledge and belief and nothing has been concealed
@@ -1110,71 +1110,71 @@
 
 
 <script>
-    document.getElementById("docphotoidname").value = "{{userprofile.docphotoidname}}";
-    document.getElementById("docageproofname").value = "{{userprofile.docageproofname}}";
-    document.getElementById("docadmissionname").value = "{{userprofile.docadmissionname}}";
-    document.getElementById("doccurrentfeename").value = "{{userprofile.doccurrentfeename}}";
-    document.getElementById("docaddressname").value = "{{userprofile.docaddressname}}";
-    document.getElementById("docincomename").value = "{{userprofile.docincomename}}";
+    document.getElementById("docphotoidname").value = "{{userprofile.docphotoidname|default:''}}";
+    document.getElementById("docageproofname").value = "{{userprofile.docageproofname|default:''}}";
+    document.getElementById("docadmissionname").value = "{{userprofile.docadmissionname|default:''}}";
+    document.getElementById("doccurrentfeename").value = "{{userprofile.doccurrentfeename|default:''}}";
+    document.getElementById("docaddressname").value = "{{userprofile.docaddressname|default:''}}";
+    document.getElementById("docincomename").value = "{{userprofile.docincomename|default:''}}";
 
-    document.getElementById("docphotoidurl").value = "{{userprofile.docphotoidurl}}";
-    document.getElementById("docageproofurl").value = "{{userprofile.docageproofurl}}";
-    document.getElementById("docadmissionurl").value = "{{userprofile.docadmissionurl}}";
-    document.getElementById("doccurrentfeeurl").value = "{{userprofile.doccurrentfeeurl}}";
-    document.getElementById("docaddressurl").value = "{{userprofile.docaddressurl}}";
-    document.getElementById("docincomeurl").value = "{{userprofile.docincomeurl}}";
-    document.getElementById("doccourse1url").value = "{{userprofile.doccourse1url}}";
-    document.getElementById("doccourse2url").value = "{{userprofile.doccourse2url}}";
-    {#document.getElementById("doccourse3url").value = "{{userprofile.doccourse3url}}";#}
-    document.getElementById("docpassbookurl").value = "{{userprofile.docpassbookurl}}";
+    document.getElementById("docphotoidurl").value = "{{userprofile.docphotoidurl|default:''}}";
+    document.getElementById("docageproofurl").value = "{{userprofile.docageproofurl|default:''}}";
+    document.getElementById("docadmissionurl").value = "{{userprofile.docadmissionurl|default:''}}";
+    document.getElementById("doccurrentfeeurl").value = "{{userprofile.doccurrentfeeurl|default:''}}";
+    document.getElementById("docaddressurl").value = "{{userprofile.docaddressurl|default:''}}";
+    document.getElementById("docincomeurl").value = "{{userprofile.docincomeurl|default:''}}";
+    document.getElementById("doccourse1url").value = "{{userprofile.doccourse1url|default:''}}";
+    document.getElementById("doccourse2url").value = "{{userprofile.doccourse2url|default:''}}";
+    {#document.getElementById("doccourse3url").value = "{{userprofile.doccourse3url|default:''}}";#}
+    document.getElementById("docpassbookurl").value = "{{userprofile.docpassbookurl|default:''}}";
 
     {% if userprofile.docphotoidurl %}
-        document.getElementById("docphotoidview").href = "{{ userprofile.docphotoidurl }}";
+        document.getElementById("docphotoidview").href = "{{ userprofile.docphotoidurl |default:''}}";
         document.getElementById("docphotoidview").setAttribute('target', '_blank');
         document.getElementById("docphotoidview").className = "text-info";
     {% endif %}
     {% if userprofile.docageproofurl %}
-        document.getElementById("docageproofview").href = "{{ userprofile.docageproofurl }}";
+        document.getElementById("docageproofview").href = "{{ userprofile.docageproofurl |default:''}}";
         document.getElementById("docageproofview").setAttribute('target', '_blank');
         document.getElementById("docageproofview").className = "text-info";
     {% endif %}
     {% if userprofile.docadmissionurl %}
-        document.getElementById("docadmissionview").href = "{{ userprofile.docadmissionurl }}";
+        document.getElementById("docadmissionview").href = "{{ userprofile.docadmissionurl |default:''}}";
         document.getElementById("docadmissionview").setAttribute('target', '_blank');
         document.getElementById("docadmissionview").className = "text-info";
     {% endif %}
     {% if userprofile.doccurrentfeeurl %}
-        document.getElementById("doccurrentfeeview").href = "{{ userprofile.doccurrentfeeurl }}";
+        document.getElementById("doccurrentfeeview").href = "{{ userprofile.doccurrentfeeurl |default:''}}";
         document.getElementById("doccurrentfeeview").setAttribute('target', '_blank');
         document.getElementById("doccurrentfeeview").className = "text-info";
     {% endif %}
     {% if userprofile.docaddressurl %}
-        document.getElementById("docaddressview").href = "{{ userprofile.docaddressurl }}";
+        document.getElementById("docaddressview").href = "{{ userprofile.docaddressurl |default:''}}";
         document.getElementById("docaddressview").setAttribute('target', '_blank');
         document.getElementById("docaddressview").className = "text-info";
     {% endif %}
     {% if userprofile.docincomeurl %}
-        document.getElementById("docincomeview").href = "{{ userprofile.docincomeurl }}";
+        document.getElementById("docincomeview").href = "{{ userprofile.docincomeurl |default:''}}";
         document.getElementById("docincomeview").setAttribute('target', '_blank');
         document.getElementById("docincomeview").className = "text-info";
     {% endif %}
     {% if userprofile.doccourse1url %}
-        document.getElementById("doccourse1view").href = "{{ userprofile.doccourse1url }}";
+        document.getElementById("doccourse1view").href = "{{ userprofile.doccourse1url |default:''}}";
         document.getElementById("doccourse1view").setAttribute('target', '_blank');
         document.getElementById("doccourse1view").className = "text-info";
     {% endif %}
     {% if userprofile.doccourse2url %}
-        document.getElementById("doccourse2view").href = "{{ userprofile.doccourse2url }}";
+        document.getElementById("doccourse2view").href = "{{ userprofile.doccourse2url |default:''}}";
         document.getElementById("doccourse2view").setAttribute('target', '_blank');
         document.getElementById("doccourse2view").className = "text-info";
     {% endif %}
     {#    {% if userprofile.doccourse3url %}#}
-    {#        document.getElementById("doccourse3view").href = "{{ userprofile.doccourse3url }}";#}
+    {#        document.getElementById("doccourse3view").href = "{{ userprofile.doccourse3url |default:''}}";#}
     {#        document.getElementById("doccourse3view").setAttribute('target', '_blank');#}
     {#        document.getElementById("doccourse3view").className = "text-info";#}
     {#    {% endif %}#}
     {% if userprofile.docpassbookurl %}
-        document.getElementById("docpassbookview").href = "{{ userprofile.docpassbookurl }}";
+        document.getElementById("docpassbookview").href = "{{ userprofile.docpassbookurl |default:''}}";
         document.getElementById("docpassbookview").setAttribute('target', '_blank');
         document.getElementById("docpassbookview").className = "text-info";
     {% endif %}
@@ -1256,14 +1256,14 @@
         } else if (doccourse1url.value === "") {
             Swal.fire({
                 icon: "error",
-                title: '{{ userprofile.course1name }} marksheet not uploaded',
+                title: '{{ userprofile.course1name |default:''}} marksheet not uploaded',
                 text: 'Please upload marksheet',
             });
             return false;
         } else if (doccourse2url.value === "") {
             Swal.fire({
                 icon: "error",
-                title: '{{ userprofile.course2name }} marksheet not uploaded',
+                title: '{{ userprofile.course2name |default:''}} marksheet not uploaded',
                 text: 'Please upload marksheet',
             });
             return false;
@@ -1271,7 +1271,7 @@
             {#else if (doccourse3url.value === "") {#}
             {#    Swal.fire({#}
             {#        icon: "error",#}
-            {#        title: '{{ userprofile.course3name }} marksheet not uploaded',#}
+            {#        title: '{{ userprofile.course3name |default:''}} marksheet not uploaded',#}
             {#        text: 'Please upload marksheet',#}
             {#    });#}
             {#    return false;#}
