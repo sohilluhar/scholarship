@@ -1,0 +1,185 @@
+----------------------------
+AppliedScheme
+----------------------------
+
+from django.db import models
+import json
+
+class AppliedScheme(models.Model):
+    scheme_id = models.CharField(max_length=255)
+    scheme_name = models.CharField(max_length=255)
+    tname = models.CharField(max_length=255)
+    trust_id = models.CharField(max_length=255)
+    userid = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    status = models.CharField(max_length=255)
+    schemeamount = models.DecimalField(max_digits=10, decimal_places=2)
+    sanctionedamount = models.DecimalField(max_digits=10, decimal_places=2)
+    interviewdate = models.CharField(max_length=255, blank=True, null=True)
+    remark = models.TextField(null=True)
+
+def create_applied_scheme(request):
+    json_data = json.loads(request.body)
+    for scheme_id, scheme_data in json_data.items():
+        scheme = AppliedScheme(
+            scheme_id=scheme_data['scheme_id'],
+            scheme_name=scheme_data['scheme_name'],
+            tname=scheme_data['tname'],
+            trust_id=scheme_data['trust_id'],
+            userid=scheme_data['userid'],
+            username=scheme_data['username'],
+            status=scheme_data['status'],
+            schemeamount=scheme_data['schemeamount'],
+            sanctionedamount=scheme_data['sanctionedamount'],
+            interviewdate=scheme_data.get('interviewdate', None),
+            remark=scheme_data.get('remark', None)
+        )
+        scheme.save()
+
+----------------------------
+Scheme
+----------------------------
+from django.db import models
+import json
+
+class Scheme(models.Model):
+    scheme_id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    trust_id = models.CharField(max_length=255)
+    level = models.CharField(max_length=255)
+    course = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    eligibility = models.TextField()
+    lastdate = models.CharField(max_length=255)
+    logo = models.URLField(max_length=255)
+
+def create_scheme(request):
+    json_data = json.loads(request.body)
+    for scheme_id, scheme_data in json_data.items():
+        scheme = Scheme(
+            scheme_id=scheme_id,
+            name=scheme_data['name'],
+            trust_id=scheme_data['trust_id'],
+            level=scheme_data['level'],
+            course=scheme_data['course'],
+            amount=scheme_data['amount'],
+            eligibility=scheme_data['eligibility'],
+            lastdate=scheme_data['lastdate'],
+            logo=scheme_data['logo'],
+        )
+        scheme.save()
+
+----------------------------
+Trust
+----------------------------
+from django.db import models
+
+class Trust(models.Model):
+    trust_id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    about = models.TextField()
+    address = models.TextField()
+    contact = models.CharField(max_length=255)
+    logo = models.URLField()
+    mailid = models.EmailField()
+    password = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    vision = models.TextField()
+
+----------------------------
+UserProfile
+----------------------------
+class UserProfile(models.Model):
+    phone_number = models.CharField(max_length=10, primary_key=True)
+    account_number = models.CharField(max_length=256)
+    achievement = models.CharField(max_length=256, blank=True)
+    address = models.CharField(max_length=256)
+    age = models.IntegerField()
+    annual_income = models.IntegerField()
+    bank_name = models.CharField(max_length=256)
+    cast = models.CharField(max_length=256)
+    collegeaddress = models.CharField(max_length=256)
+    collegeheadname = models.CharField(max_length=256)
+    collegename = models.CharField(max_length=256)
+    course1board = models.CharField(max_length=256)
+    course1marks = models.IntegerField()
+    course1markstotal = models.IntegerField()
+    course1medium = models.CharField(max_length=256)
+    course1name = models.CharField(max_length=256)
+    course1per = models.FloatField()
+    course1year = models.CharField(max_length=256)
+    course2board = models.CharField(max_length=256)
+    course2marks = models.IntegerField()
+    course2markstotal = models.IntegerField()
+    course2medium = models.CharField(max_length=256)
+    course2name = models.CharField(max_length=256)
+    course2per = models.FloatField()
+    course2year = models.CharField(max_length=256)
+    course3board = models.CharField(max_length=256)
+    course3name = models.CharField(max_length=256)
+    course3per = models.CharField(max_length=256)
+    course3year = models.CharField(max_length=256)
+    courseacademicyear = models.CharField(max_length=256)
+    courseduration = models.CharField(max_length=256)
+    coursefees = models.CharField(max_length=256)
+    coursefeespaid = models.CharField(max_length=256)
+    coursefeesrequired = models.CharField(max_length=256)
+    coursename = models.CharField(max_length=256)
+    dob = models.CharField(max_length=256)
+    docaddressname = models.CharField(max_length=256)
+    docaddressurl = models.URLField()
+    docadmissionname = models.CharField(max_length=256)
+    docadmissionurl = models.URLField()
+    docageproofname = models.CharField(max_length=256)
+    docageproofurl = models.URLField()
+    doccourse1url = models.URLField()
+    doccourse2url = models.URLField()
+    doccourse3url = models.URLField()
+    doccurrentfeename = models.CharField(max_length=256)
+    doccurrentfeeurl = models.URLField()
+    docincomename = models.CharField(max_length=256)
+    docincomeurl = models.URLField()
+    docpassbookurl = models.URLField()
+    fname = models.CharField(max_length=255)
+    sname = models.CharField(max_length=255)
+    lname = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=10)
+    gender = models.CharField(max_length=10)
+    dob = models.DateField()
+    religious = models.CharField(max_length=255)
+    parent_status = models.CharField(max_length=255)
+    parent_phone = models.CharField(max_length=10)
+    fathername = models.CharField(max_length=255)
+    fatheroccupation = models.CharField(max_length=255)
+    fatherincome = models.IntegerField()
+    fatheralive = models.BooleanField()
+    mothername = models.CharField(max_length=255)
+    motheroccupation = models.CharField(max_length=255)
+    motherincome = models.IntegerField()
+    motheralive = models.BooleanField()
+    totalearningmember = models.IntegerField()
+    totalfamilymember = models.IntegerField()
+    family_income = models.IntegerField()
+    lastcoursename = models.CharField(max_length=255)
+    lastcourseacademicyear = models.CharField(max_length=255)
+    nameinpassbook = models.CharField(max_length=255)
+    ifsc_code = models.CharField(max_length=255)
+    pincode = models.CharField(max_length=6)
+    docphotoidname = models.CharField(max_length=255)
+    docphotoidurl = models.CharField(max_length=255)
+
+
+----------------------------
+User
+----------------------------
+class User(models.Model):
+    mail = models.EmailField()
+    name = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
+    phone = models.CharField(max_length=15)
+    profilefill = models.CharField(max_length=3)
+
+class AppliedUserScheme(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    applied_scheme = models.CharField(max_length=255)
