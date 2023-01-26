@@ -70,7 +70,7 @@ def create_scheme(request):
         scheme.save()
 
 ----------------------------
-Trust
+Trust (DONE)
 ----------------------------
 from django.db import models
 

@@ -9,7 +9,9 @@ class User(models.Model):
     phone = models.CharField(max_length=15,unique=True)
     adhar_no= models.CharField(max_length=16,unique=True)
     profilefill = models.CharField(max_length=3)
-
+    def __str__(self):
+        return self.name
+    
     def clean(self):
         if User.objects.filter(adhar_no=self.adhar_no).exclude(pk=self.pk).exists():
             raise ValidationError("Adhar Number already exists.")
@@ -23,7 +25,8 @@ class AppliedUserScheme(models.Model):
     applied_scheme = models.CharField(max_length=255)
 
 class UserProfile(models.Model):
-    phone_number = models.CharField(max_length=10,default=None)
+    
+    phone_number = models.CharField(max_length=10)
     account_number = models.CharField(max_length=256,null=True,default=None)
     achievement = models.CharField(max_length=256, null=True,default=None)
     address = models.CharField(max_length=256, null=True,default=None)
@@ -100,3 +103,19 @@ class UserProfile(models.Model):
     pincode = models.CharField(max_length=6, null=True,default=None)
     docphotoidname = models.CharField(max_length=255, null=True,default=None)
     docphotoidurl = models.CharField(max_length=255, null=True,default=None)
+    def __str__(self):
+        return self.phone_number
+
+class Trust(models.Model):
+    trust_id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255, null=True)
+    about = models.TextField(null=True)
+    address = models.TextField( null=True)
+    contact = models.CharField(max_length=255, null=True)
+    logo = models.TextField( null=True)
+    mailid = models.EmailField( null=True)
+    password = models.CharField(max_length=255, null=True)
+    username = models.CharField(max_length=255, null=True)
+    vision = models.TextField(null=True)
+    def __str__(self):
+        return self.name

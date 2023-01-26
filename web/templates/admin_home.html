@@ -53,17 +53,17 @@
                                     </thead>
                                     <tbody>
 
-                                    {% for key,values in trusts.items %}
+                                    {% for values in trusts %}
 
                                         <tr>
-                                            <td>{{ key }}</td>
+                                            <td>{{  values.trust_id }}</td>
                                             <td>{{ values.name }}
                                             </td>
                                             <td>
                                                 <form method="post" action="/adminedittrust">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="tkey" id="tkey"
-                                                           value="{{ key }}"/>
+                                                           value="{{ trust_id }}"/>
 
                                                     <button type="submit" class="btn btn-sm">
                                                         <span class="text-info"> Edit</span>

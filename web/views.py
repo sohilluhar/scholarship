@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from web.form import UserForm
-from web.models import User, UserProfile
+from web.models import User, UserProfile, Trust
 from . import Common
 from . import PyConfig
 from .SendMail import sendmail
@@ -59,58 +59,60 @@ def adminverify(request):
     adminname = request.POST.get('trust_username')
     password = request.POST.get('password')
 
-    db = connect_firebase()
-    username = db.child("Admin").child("username").get().val()
-    passworddb = db.child("Admin").child("password").get().val()
+    # db = connect_firebase()
+    # username = db.child("Admin").child("username").get().val()
+    # passworddb = db.child("Admin").child("password").get().val()
+    from django.contrib.auth import authenticate
+    user = authenticate(username=adminname, password=password)
+    if user is not None:
 
-    if adminname == username and password == passworddb:
         #
         # Common.isAdminLogin = True
         # request.session['admin'] = db.child("Admin").get().val()
 
         request.session['isAdminLogin'] = True
-        request.session['admin'] = db.child("Admin").get().val()
+        #request.session['admin'] = db.child("Admin").get().val()
 
         return HttpResponseRedirect('/adminhome')
     else:
         return render(request, 'redirecthome.html',
-                      {"swicon": "error", "swtitle": "Error", "swmsg": "Invalid Password or usrername",
+                      {"swicon": "error", "swtitle": "Error", "swmsg": "Invalid Password or username",
                        "path": "admin-login"})
 
 
 def adminhome(req):
     # if 'cart' not in request.session:
     if ('isAdminLogin' in req.session):
-        data = OrderedDict()
+        data = Trust.objects.all().values()
 
-        db = connect_firebase()
-        try:
-            data = db.child("Trust").get().val()
-        except:
-            pass
+        # db = connect_firebase()
+        # try:
+        #     data = db.child("Trust").get().val()
+        # except:
+        #     pass
 
         print(data)
         return render(req, 'admin_home.html',
-                      {"admin": req.session['admin'], "trusts": data})
+                      { "trusts": data})
     else:
         return render(req, 'redirecthome.html',
                       {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
 
 
 def addtrust(req):
-    if ('isAdminLogin' in req.session):
+    if req.user.is_superuser:
 
         timestamp = datetime.timestamp(datetime.now())
         trustkey = str(timestamp).replace('.', '')
         return render(req, 'addtrust.html',
-                      {"admin": req.session['admin'], "trustkey": trustkey})
+                      {"trustkey": trustkey})
     else:
         return render(req, 'redirecthome.html',
                       {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
 
 
 def addtrustdb(request):
-    if ('isAdminLogin' in request.session):
+    if request.user.is_superuser:
         tname = request.POST['tname']
         tcontact = request.POST['tcontact']
         temailid = request.POST['temailid']
@@ -124,24 +126,11 @@ def addtrustdb(request):
         tlogo = "https://firebasestorage.googleapis.com/v0/b/scholar-help-966a2.appspot.com/o/trust_logo%2F" + tkey + ".png?alt=media"
 
         db = connect_firebase()
-        temail = None
-        tphone = None
 
-        try:
-            temail = db.child("Trust").order_by_child("mailid").equal_to(temailid).get().val()
-            print(temail + "mailid")
-        except:
-            pass
-        try:
-
-            tphone = db.child("Trust").order_by_child("contact").equal_to(tcontact).get().val()
-
-        except:
-            pass
-        if temail:
+        if Trust.objects.filter(mailid=temailid).exists():
             return render(request, 'redirecthome.html',
                           {"swicon": "error", "swtitle": "Error", "swmsg": "Trust Email Exists", "path": "addtrust"})
-        elif tphone:
+        elif Trust.objects.filter(contact=tcontact).exists():
             return render(request, 'redirecthome.html',
                           {"swicon": "error", "swtitle": "Error", "swmsg": "Trust Phone Exists", "path": "addtrust"})
         else:
@@ -149,7 +138,7 @@ def addtrustdb(request):
             data = {
                 "name": tname, "contact": tcontact, "mailid": temailid,
                 "about": tabout, "address": taddress, "vision": tvision, "password": tpass
-                , "logo": tlogo, "username": tname
+                , "logo": tlogo, "username": tname,"trust_id":tkey
 
             }
             msgsend = "" \
@@ -158,7 +147,12 @@ def addtrustdb(request):
                       "" + tpass + " ."
             print(data)
 
-            db.child("Trust").child(str(tkey)).update(data)
+
+            #db.child("Trust").child(str(tkey)).update(data)
+            Trust.objects.update_or_create(
+                trust_id=tkey,
+                defaults=data
+            )
             sendmail(temailid, "Successfully Registered on Scholar Help -" + tkey
                      , msgsend
                      )
@@ -331,7 +325,11 @@ def adminupdattrust(request):
 
 
 def trust_login(request):
-    return render(request, 'trust_login.html', {})
+    if 'isTrustLogin' not in request.session:
+     return render(request, 'trust_login.html', {})
+    else:
+
+        return HttpResponseRedirect('/trusthome')
 
 
 def forgotpass(request):
@@ -435,38 +433,40 @@ def trust_verify(request):
         trustusername = request.POST.get('trust_username')
         password = request.POST.get('password')
 
-        print(password)
-        db = connect_firebase()
-        trust = None
-        try:
-            user = db.child("Trust").order_by_child("mailid").equal_to(trustusername).get().val()
+        # print(password)
+        # db = connect_firebase()
+        # trust = None
+        # try:
+        #     user = db.child("Trust").order_by_child("mailid").equal_to(trustusername).get().val()
+        #
+        #     for key, value in user.items():
+        #         trustkey = key
+        #         trust = value
+        # except:
+        #     pass
 
-            for key, value in user.items():
-                trustkey = key
-                trust = value
-        except:
-            pass
-
-        if trust == None:
+        if not Trust.objects.filter(mailid=trustusername).exists():
             return render(request, 'redirecthome.html',
-                          {"swicon": "error", "swtitle": "Error", "swmsg": "Invalid Trust Id", "path": "trustlogin"})
-        elif password == trust.get("password"):
-            # Common.trustkey = trustkey
-            # Common.trustVal = trust
-            # Common.isTrustLogin = True
-
-            request.session['trustkey'] = trustkey
-            request.session['trustVal'] = trust
-            request.session['isTrustLogin'] = True
-
-            return HttpResponseRedirect('/trusthome')
+                          {"swicon": "error", "swtitle": "Error", "swmsg": "Incorrect UserID or Password", "path": "trustlogin"})
         else:
-            return render(request, 'redirecthome.html',
-                          {"swicon": "error", "swtitle": "Error", "swmsg": "Invalid Password",
-                           "path": "trustlogin"})
+            user = Trust.objects.get(mailid=trustusername)
+            if password == user.password:
+                # Common.trustkey = trustkey
+                # Common.trustVal = trust
+                # Common.isTrustLogin = True
+
+                request.session['trustkey'] = user.trust_id
+                # request.session['trustVal'] = trust
+                request.session['isTrustLogin'] = True
+
+                return HttpResponseRedirect('/trusthome')
+            else:
+                return render(request, 'redirecthome.html',
+                              {"swicon": "error", "swtitle": "Error", "swmsg": "Incorrect UserID or Password",
+                               "path": "trustlogin"})
     else:
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/trusthome')
 
 
 def trust_home(req):
@@ -483,7 +483,6 @@ def trust_home(req):
         print(data)
         return render(req, 'trust_home.html',
                       {"trustkey": req.session['trustkey'],
-                       "trust_val": req.session['trustVal'],
                        "applied_schemes": data})
     else:
         return render(req, 'redirecthome.html',
@@ -627,7 +626,7 @@ def register(request):
 
 def trust_logout(request):
     del request.session['trustkey']
-    del request.session['trustVal']
+    #del request.session['trustVal']
     del request.session['isTrustLogin']
     # 'isTrustLogin' in req.session = False
     # req.session['isLogin'] = False

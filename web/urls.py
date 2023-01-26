@@ -22,7 +22,7 @@ from . import views
 # from Scholar_Help.views import home, login, register
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('myadmin/', admin.site.urls),
     re_path(r'^trust/(?P<pk>\d+)$', views.viewtrustdetails),
     re_path(r'^scheme/(?P<pk>\d+)$', views.viewschemedetails),
     re_path(r'^getcat([?^/*])', views.category),
