@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from web.form import UserForm
-from web.models import User, UserProfile, Trust
+from web.models import User, UserProfile, Trust, Scheme, AppliedScheme
 from . import Common
 from . import PyConfig
 from .SendMail import sendmail
@@ -471,16 +471,16 @@ def trust_verify(request):
 
 def trust_home(req):
     if ('isTrustLogin' in req.session):
-        data = OrderedDict()
+        data = AppliedScheme.objects.filter(trust_id=req.session['trustkey'])
 
-        db = connect_firebase()
-        try:
-            data = db.child("AppliedScheme").order_by_child("trust_id").equal_to(req.session['trustkey']).get().val()
-            data = collections.OrderedDict(reversed(list(data.items())))
-        except:
-            pass
-
-        print(data)
+        # db = connect_firebase()
+        # try:
+        #     data = db.child("AppliedScheme").order_by_child("trust_id").equal_to(req.session['trustkey']).get().val()
+        #     data = collections.OrderedDict(reversed(list(data.items())))
+        # except:
+        #     pass
+        #
+        # print(data)
         return render(req, 'trust_home.html',
                       {"trustkey": req.session['trustkey'],
                        "applied_schemes": data})
@@ -600,21 +600,22 @@ def updatetrustprofile(request):
 def addscholarhip(req):
     if ('isTrustLogin' in req.session):
         return render(req, 'add_scholarship.html',
-                      {"trustkey": req.session['trustkey'], "trust_val": req.session['trustVal']})
+                      {"trustkey": req.session['trustkey']})
     else:
         return render(req, 'redirecthome.html',
                       {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
 
 
 def viewallscholarships(request):
-    schemes = OrderedDict()
-    db = connect_firebase()
-    try:
-        schemes = db.child("Scheme").order_by_child("trust_id").equal_to(request.session['trustkey']).get().val()
-    except:
-        print("Error")
+    # schemes = OrderedDict()
+    schemes = Scheme.objects.filter(trust_id=request.session['trustkey'])
+    # db = connect_firebase()
+    # try:
+    #     schemes = db.child("Scheme").order_by_child("trust_id").equal_to(request.session['trustkey']).get().val()
+    # except:
+    #     print("Error")
     return render(request, 'trust_allscheme.html',
-                  {"trustkey": request.session['trustkey'], "trust_val": request.session['trustVal'],
+                  {"trustkey": request.session['trustkey'],
                    "scholarships": schemes
                    })
 
@@ -752,69 +753,79 @@ def addscholarhiptofire(req):
     seligibility = req.POST['seligibility']
     sdeadline = req.POST['sdeadline']
     timestamp = datetime.timestamp(datetime.now())
-    logo = req.session['trustVal'].get("logo")
     trust_id = req.session['trustkey']
-    db = connect_firebase()
+    # db = connect_firebase()
 
     data = {
         "amount": samt, "course": scourse, "eligibility": seligibility, "lastdate": sdeadline,
-        "level": scat, "logo": logo, "name": sname, "trust_id": trust_id
+        "level": scat, "logo": "", "name": sname, "trust_id": trust_id
     }
-    print(str(timestamp))
+    # print(str(timestamp))
 
-    strtimestamp = str(timestamp).replace('.', '')
+    #     strtimestamp = str(timestamp).replace('.', '')
 
-    db.child("Scheme").child(strtimestamp[:13]).set(
-        data
-    )
-
+    # db.child("Scheme").child(strtimestamp[:13]).set(
+    #     data
+    # )
+    Scheme.objects.create(**data)
     return render(req, 'redirecthome.html',
                   {"swicon": "success", "swtitle": "Done", "swmsg": "Scholarship Added Successfully.",
                    "path": "trusthome"})
 
 
 def viewtrustdetails(request, pk):
-    global schemes
-    schemes = OrderedDict()
-    db = connect_firebase()
-    trust = db.child("Trust").child(str(pk)).get().val()
-    all_trusts = db.child("Trust").order_by_key().get().val()
-    del all_trusts[str(pk)]
-    try:
-        schemes = db.child("Scheme").order_by_child("trust_id").equal_to(str(pk)).get().val()
-    except:
-        print("Error")
 
-    return render(request, 'trustdetails.html',
-                  {"scheme": schemes, 'trust': trust, "all_trusts": all_trusts,
-                   "islog": True if 'isLogin' in request.session else False
-                   })
+    try:
+        global schemes
+        schemes = None
+        db = connect_firebase()
+        trust = db.child("Trust").child(str(pk)).get().val()
+        trust = Trust.objects.get(trust_id=str(pk))
+        all_trusts = Trust.objects.exclude(trust_id=str(pk))
+        # del all_trusts[str(pk)]
+        schemes = Scheme.objects.filter(trust_id=pk)
+
+        return render(request, 'trustdetails.html',
+                      {"scheme": schemes, 'trust': trust, "all_trusts": all_trusts,
+                       "islog": True if 'isLogin' in request.session else False
+                       })
+    except:
+       print("Error")
+       return render(request, 'redirecthome.html',
+                     {"swicon": "error", "swtitle": "Error", "swmsg": "Error", "path": ""})
 
 
 def viewschemedetails(request, pk):
     global schemes
     db = connect_firebase()
     #
-    # all_trusts = db.child("Trust").order_by_key().get().val()
+    # all_trusts = db.childaddtrustdb("Trust").order_by_key().get().val()
     # del all_trusts[str(pk)]
     applied_scheme = None
-    try:
-
-        applied_scheme = request.session['currentUser'].get("applied_scheme")
-    except:
-        pass
-    if applied_scheme == None:
-        applied_scheme = []
+    isapplyscheme=False
     isapply = "False"
-    if str(pk) in applied_scheme:
+    if AppliedScheme.objects.filter(userid=request.session['currentUser'],scheme_id=pk).exists():
         isapply = "True"
-    scheme = db.child("Scheme").child(str(pk)).get().val()
-    trust = db.child("Trust").child(scheme.get("trust_id")).get().val()
-    other_schemes = db.child("Scheme").order_by_child("level").equal_to(scheme.get("level")).get().val()
-    del other_schemes[str(pk)]
+    # try:
+    #
+    #     applied_scheme = request.session['currentUser'].get("applied_scheme")
+    #     isapplyscheme = Scheme.objects.filter(userid=request.session['currentUser'],scheme_id=pk).exists()
+    # except:
+    #     pass
+    # if applied_scheme == None:
+    #     applied_scheme = []
+    # isapply = "False"
+    # if str(pk) in applied_scheme:
+    #     isapply = "True"
+    scheme = Scheme.objects.get(id=pk)
+    trust = Trust.objects.filter(trust_id=scheme.trust_id)
+    # other_schemes = db.child("Scheme").order_by_child("level").equal_to(scheme.get("level")).get().val()
+    other_schemes = Scheme.objects.filter(level=scheme.level).exclude(id=pk)
+    print(other_schemes)
+    # del other_schemes[str(pk)]
     isclosed = False
-    print(scheme.get("lastdate"))
-    deadline = datetime.strptime(scheme.get("lastdate"), "%d-%B-%Y")
+    print(scheme.lastdate)
+    deadline = datetime.strptime(scheme.lastdate, "%d-%B-%Y")
     today = datetime.now()
     if deadline < today:
         isclosed = True
@@ -1212,63 +1223,47 @@ def user_completeprofile(request):
 
 def applyscholarship(request):  # user has click on apply button add userinfo to db
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
+        # userprofile = OrderedDict()
+        print(request.session['currentUser'])
+        # userprofile = UserProfile.objects.get(phone_number=request.session['currentUser'])
+        userprofile = UserProfile.objects.get(phone_number=request.session['currentUser'])
 
-        db = connect_firebase()
+        # db = connect_firebase()
+        #
+        # request.session['currentUser'] = db.child("users").child(
+        #     request.session['currentUser'].get("phone")).get().val()
+        # try:
+        #     userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
+        # except:
+        #     print("Error")
 
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
-        try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
-        except:
-            print("Error")
-
-        if request.session['currentUser'].get("profilefill") == "100":
+        if User.objects.get(phone=request.session['currentUser']).profilefill == "100":
 
             schemeid = request.POST['schemeid_apply']
             amount = request.POST['amount']
             trust_id = request.POST['trust_id']
             schemename = request.POST['schemename']
-
-            userphone = request.session['currentUser'].get("phone")
-            name = userprofile.get("sname") + " " + userprofile.get("fname") + " " + userprofile.get("lname")
+            userphone = request.session['currentUser']
+            name = userprofile.sname + " " + userprofile.fname+ " " + userprofile.lname
             status = "Pending"
 
             applicationid = datetime.timestamp(datetime.now())
             applicationid = str(applicationid).replace('.', '')
             applicationid = applicationid[:13]
 
-            tname = db.child("Trust").child(trust_id).child("name").get().val()
+            # tname = db.child("Trust").child(trust_id).child("name").get().val()
+            tname = Trust.objects.get(trust_id=trust_id).name
             print(tname)
 
             data = {
                 "userid": userphone, "username": name,
                 "scheme_id": schemeid, "scheme_name": schemename, "schemeamount": amount,
-                "status": status, "remark": "", "sanctionedamount": "0", "trust_id": trust_id, "tname": tname
+                "status": status, "remark": "", "sanctionedamount": "0", "trust_id": trust_id, "tname": tname,
+                "applicationid":applicationid
             }
 
-            db.child("AppliedScheme").child(applicationid).set(
-                data
-            )
+            AppliedScheme.objects.create(**data)
 
-            applied_scheme = None
-            try:
-
-                print(request.session['currentUser'])
-                applied_scheme = request.session['currentUser'].get("applied_scheme")
-
-                print(request.session['currentUser'])
-                print("inside try" + applied_scheme)
-            except:
-                pass
-            if applied_scheme == None:
-                applied_scheme = []
-            print(applied_scheme)
-            applied_scheme.append(schemeid)
-
-            db.child("users").child(userphone).update(
-                {"applied_scheme": applied_scheme}
-            )
 
             return render(request, 'redirecthome.html',
                           {"swicon": "success", "swtitle": "Done",
@@ -1286,14 +1281,14 @@ def applyscholarship(request):  # user has click on apply button add userinfo to
 
 def appliedscholarship(request):
     if (request.session['isLogin']):
-        data = OrderedDict()
+        data = AppliedScheme.objects.filter(userid=request.session['currentUser']).values()
 
-        db = connect_firebase()
-        try:
-            data = db.child("AppliedScheme").order_by_child("userid").equal_to(
-                request.session['currentUser'].get("phone")).get().val()
-        except:
-            pass
+        # db = connect_firebase()
+        # try:
+        #     data = db.child("AppliedScheme").order_by_child("userid").equal_to(
+        #         request.session['currentUser'].get("phone")).get().val()
+        # except:
+        #     pass
 
         return render(request, 'user_appliedscheme.html',
                       {"currentuser": request.session['currentUser'], "applied_schemes": data})

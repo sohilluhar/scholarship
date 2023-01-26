@@ -204,7 +204,7 @@
 
         <div class="books-wrapper">
             <div class="row">
-                {% for key,values in other_schemes.items %}
+                {% for values in other_schemes %}
                     <!--to get all scheme type-->
 
                     {% csrf_token %}
@@ -215,7 +215,7 @@
                                 <h5>{{ values.name }}</h5>
                                 <h6> For <b>{{ values.course }}</b></h6>
                                 <h6> Upto ₹ {{ values.amount }}</h6>
-                                <a href="/scheme/{{ key }}">Apply</a>
+                                <a href="/scheme/{{ values.id }}">Apply</a>
                             </div>
                         </div>
                     </div>

@@ -55,10 +55,10 @@
                                     </thead>
                                     <tbody>
 
-                                    {% for key,values in applied_schemes.items %}
+                                    {% for values in applied_schemes %}
 
                                         <tr>
-                                            <td>{{ key }}</td>
+                                            <td>{{ values.applicationid}}</td>
                                             <td><a target="_blank"
                                                    href="/scheme/{{ values.scheme_id }}">{{ values.scheme_name }}</a>
                                             </td>
@@ -69,12 +69,12 @@
 
 
                                                 <button type="button" class="btn btn-sm" data-toggle="modal"
-                                                        data-target="#modal-{{ key }}">
+                                                        data-target="#modal-{{ values.applicationid  }}">
                                                     <span class="text-info"> View</span>
                                                 </button>
 
 
-                                                <div class="modal fade" id="modal-{{ key }}">
+                                                <div class="modal fade" id="modal-{{ values.applicationid  }}">
                                                     <div class="modal-dialog modal-lg">
                                                         <div class="modal-content">
                                                             <div class="modal-header">

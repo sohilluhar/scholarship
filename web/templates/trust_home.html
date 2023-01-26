@@ -56,10 +56,10 @@
                                     </thead>
                                     <tbody>
 
-                                    {% for key,values in applied_schemes.items %}
+                                    {% for values in applied_schemes %}
 
                                         <tr>
-                                            <td>{{ key }}</td>
+                                            <td>{{ values.id }}</td>
                                             <td>{{ values.scheme_name }}
                                             </td>
                                             <td>{{ values.schemeamount }}</td>
@@ -72,7 +72,7 @@
                                                     <input type="hidden" name="userphone" id="userphone"
                                                            value="{{ values.userid }}"/>
                                                     <input type="hidden" name="applicationid" id="applicationid"
-                                                           value="{{ key }}"/>
+                                                           value="{{ values.id }}"/>
                                                     {% if  values.status == "Approve" %}
                                                         <button type="submit" class="btn btn-sm">
                                                             <span class="text-info"> View </span>

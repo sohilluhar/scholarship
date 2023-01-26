@@ -67,10 +67,10 @@
                                     </thead>
                                     <tbody>
 
-                                    {% for key,values in scholarships.items %}
+                                    {% for values in scholarships %}
 
                                         <tr>
-                                            <td>{{ key }}</td>
+                                            <td>{{ values.id }}</td>
                                             <td>{{ values.name }}
                                             </td>
                                             <td>{{ values.amount }}</td>
@@ -78,15 +78,15 @@
                                             <td>
                                                 {#                                              Update modal here#}
                                                 <form role="form" method="POST"
-                                                      id="updatescholarship-{{ key }}"
+                                                      id="updatescholarship-{{ values.id }}"
                                                       action="/updatescholarhiptofire"
                                                       enctype="multipart/form-data">
                                                     <button type="button" class="btn btn-sm" data-toggle="modal"
-                                                            data-target="#modal-{{ key }}">
+                                                            data-target="#modal-{{ values.id }}">
                                                         <span class="text-info"> Update</span>
                                                     </button>
 
-                                                    <div class="modal fade" id="modal-{{ key }}">
+                                                    <div class="modal fade" id="modal-{{ values.id }}">
                                                         <div class="modal-dialog modal-lg">
                                                             <div class="modal-content">
 
@@ -123,9 +123,9 @@
                                                                                    class="form-control"
                                                                                    value="{{ values.amount }}"
                                                                                    required>
-                                                                            <input type="hidden" name="key" id="key"
+                                                                            <input type="hidden" name="values.id" id="values.id"
                                                                                    class="form-control"
-                                                                                   value="{{ key }}"
+                                                                                   value="{{ values.id }}"
 
                                                                                    required>
                                                                         </div>
@@ -134,8 +134,8 @@
                                                                                     class="text-danger">*</span>
                                                                                 Dead Line :</label>
                                                                             <input type="text"
-                                                                                   name="sdeadline-{{ key }}"
-                                                                                   id="sdeadline-{{ key }}"
+                                                                                   name="sdeadline-{{ values.id }}"
+                                                                                   id="sdeadline-{{ values.id }}"
                                                                                    class="form-control"
                                                                                    value="{{ values.lastdate }}"
                                                                                    required
@@ -144,13 +144,13 @@
                                                                                 var today = moment();
 
                                                                                 $(function () {
-                                                                                    $('input[name="sdeadline-{{ key }}"]').daterangepicker({
+                                                                                    $('input[name="sdeadline-{{ values.id }}"]').daterangepicker({
                                                                                         singleDatePicker: true,
                                                                                         autoUpdateInput: false,
                                                                                         startDate: today,
                                                                                     });
-                                                                                    $('#sdeadline-{{ key }}').on('apply.daterangepicker', function (ev, picker) {
-                                                                                        document.getElementById("sdeadline-{{ key }}").value = picker.startDate.format('DD-MMMM-YYYY');
+                                                                                    $('#sdeadline-{{ values.id }}').on('apply.daterangepicker', function (ev, picker) {
+                                                                                        document.getElementById("sdeadline-{{ values.id }}").value = picker.startDate.format('DD-MMMM-YYYY');
                                                                                     });
                                                                                 });
 
@@ -170,7 +170,7 @@
                                                                             <label><span class="text-danger">*</span>
                                                                                 Scholarship Category:</label>
                                                                             <select class="form-control" name="scat"
-                                                                                    id="scat-{{ key }}">
+                                                                                    id="scat-{{ values.id }}">
                                                                                 <option value="{{ values.level }}">{{ values.level }}
                                                                                 </option>
 
@@ -240,8 +240,8 @@
                                                                     <button type="button" class="btn btn-default"
                                                                             data-dismiss="modal">Close
                                                                     </button>
-                                                                    <button type="submit" name="submit-{{ key }}"
-                                                                            id="submit-{{ key }}"
+                                                                    <button type="submit" name="submit-{{ values.id }}"
+                                                                            id="submit-{{ values.id }}"
                                                                             class="btn btn-primary">Update
                                                                         Scholarship Details
                                                                     </button>
