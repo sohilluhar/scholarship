@@ -107,20 +107,20 @@ class UserProfile(models.Model):
     docphotoidurl = models.TextField(max_length=255, null=True, default=None)
 
     def __str__(self):
-        return self.phone_number
+        return self.fname+' '+self.lname+' '+self.sname
 
 
 class Trust(models.Model):
     trust_id = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=255, null=True)
-    about = models.CharField(max_length=255,null=True)
-    address = models.CharField(max_length=255,null=True)
+    about = models.TextField(null=True)
+    address = models.TextField(null=True)
     contact = models.CharField(max_length=255, null=True)
     logo = models.CharField(max_length=255,null=True)
     mailid = models.EmailField(null=True)
     password = models.CharField(max_length=255, null=True)
     username = models.CharField(max_length=255, null=True)
-    vision = models.CharField(max_length=255,null=True)
+    vision = models.TextField(null=True)
 
     def __str__(self):
         return self.name
@@ -148,7 +148,7 @@ class AppliedScheme(models.Model):
     userid = models.CharField(max_length=255, null=True)
     username = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=255, null=True)
-    schemeamount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    schemeamount = models.CharField(max_length=10, null=True)
     sanctionedamount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     interviewdate = models.CharField(max_length=255, blank=True, null=True)
     remark = models.CharField(max_length=255,null=True)

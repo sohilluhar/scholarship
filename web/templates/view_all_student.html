@@ -53,10 +53,10 @@
                                     </thead>
                                     <tbody>
 
-                                    {% for key,values in Users.items %}
+                                    {% for values in Users %}
 
                                         <tr>
-                                            <td>{{ key }}</td>
+                                            <td>{{ values.phone }}</td>
                                             <td>{{ values.name }}
                                             </td>
                                             <td>{{ values.profilefill }}
@@ -65,7 +65,7 @@
                                                 <form method="post" action="/studentprofile">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="tkey" id="userphone"
-                                                           value="{{ key }}"/>
+                                                           value="{{ values.phone }}"/>
 
                                                     <button type="submit" class="btn btn-sm">
                                                         <span class="text-info"> View</span>

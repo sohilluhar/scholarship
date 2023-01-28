@@ -3,3 +3,5 @@ gunicorn
 pyrebase4
 whitenoise
 cryptography
+mysql
+mysql_connector

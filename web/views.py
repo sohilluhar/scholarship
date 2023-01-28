@@ -26,21 +26,18 @@ def connect_firebase():
 
 
 def category(request, key):
-    db = connect_firebase()
-    schemes = OrderedDict()
-    catname = request.GET['category']
-    try:
-        schemes = db.child("Scheme").order_by_child("level").equal_to(catname).get().val()
-    except:
-        print("Error")
+
+    schemes = Scheme.objects.filter(level=request.GET['category'])
+
     return render(request, 'category.html',
                   {"scheme": schemes, "islog": True if 'isLogin' in request.session else False})
 
 
 def home(request):
     db = connect_firebase()
-    trusts = db.child("Trust").order_by_key().get().val()
-    schemes = db.child("Scheme").order_by_key().limit_to_last(9).get().val()
+    trusts =  Trust.objects.all()
+    schemes = Scheme.objects.all().order_by('-id')[:9]
+    print(schemes)
     isLogin = False
     if 'isLogin' in request.session:
         isLogin = True
@@ -100,7 +97,7 @@ def adminhome(req):
 
 
 def addtrust(req):
-    if req.user.is_superuser:
+    if ('isAdminLogin' in req.session):
 
         timestamp = datetime.timestamp(datetime.now())
         trustkey = str(timestamp).replace('.', '')
@@ -112,7 +109,7 @@ def addtrust(req):
 
 
 def addtrustdb(request):
-    if request.user.is_superuser:
+    if ('isAdminLogin' in request.session):
         tname = request.POST['tname']
         tcontact = request.POST['tcontact']
         temailid = request.POST['temailid']
@@ -170,7 +167,8 @@ def adminedittrustview(req):
     if ('isAdminLogin' in req.session):
         tkey = req.POST['tkey']
         db = connect_firebase()
-        tru = db.child("Trust").child(str(tkey)).get().val()
+        # tru = db.child("Trust").child(str(tkey)).get().val()
+        tru = Trust.objects.get(trust_id=str(tkey))
 
         return render(req, 'admin_edit_trust.html',
                       {"trustkey": str(tkey), "trust_val": tru})
@@ -183,11 +181,10 @@ def adminstudentview(req):
     if ('isAdminLogin' in req.session):
         db = connect_firebase()
         try:
-            data = db.child("users").get().val()
+            data = User.objects.all()
         except:
             pass
 
-        print(data)
         return render(req, 'view_all_student.html',
                       {"admin": req.session['admin'], "Users": data})
 
@@ -204,16 +201,14 @@ def studentprofile(req):
         accno = None
         try:
             userprofile = db.child("UserProfile").child(str(tkey)).get().val()
-
-            cipher = Fernet(Common.encyptionkey)
-            accno = cipher.decrypt(userprofile.get("account_number").encode()).decode()
+            userprofile =UserProfile.objects.get(phone_number=str(tkey))
 
         except:
             pass
         return render(req, 'student_comp_profile.html',
                       {
 
-                          "userprofile": userprofile, "accno": accno,
+                          "userprofile": userprofile,
 
                       })
 
@@ -224,77 +219,83 @@ def studentprofile(req):
 
 
 def removestudent(req):
-    if ('isAdminLogin' in req.session):
-        tkey = req.POST['tkey']
-        db = connect_firebase()
-        userprofile = None
-        accno = None
-        try:
-            db.child("UserProfile").child(str(tkey)).remove()
-
-        except:
-            pass
-        try:
-            db.child("users").child(str(tkey)).remove()
-
-        except:
-            pass
-        try:
-            print(tkey + "user id")
-            userapp = db.child("AppliedScheme").order_by_child("userid").equal_to(str(tkey)).get().val()
-            all11 = db.child("AppliedScheme").get().val()
-            all(map(all11.pop, userapp))
-            db.child("AppliedScheme").set(all11)
-        except:
-            pass
-        return render(req, 'redirecthome.html',
-                      {"swicon": "success", "swtitle": "Done", "swmsg": "Student Remove Successfully",
-                       "path": "adminhome"})
-
-
-    else:
-        return render(req, 'redirecthome.html',
-                      {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
+    return render(req, 'redirecthome.html',
+                  {"swicon": "success", "swtitle": "Done", "swmsg": "Can't Remove ",
+                   "path": "adminhome"})
+    # if ('isAdminLogin' in req.session):
+    #     tkey = req.POST['tkey']
+    #     db = connect_firebase()
+    #     userprofile = None
+    #     accno = None
+    #     try:
+    #         db.child("UserProfile").child(str(tkey)).remove()
+    #
+    #     except:
+    #         pass
+    #     try:
+    #         db.child("users").child(str(tkey)).remove()
+    #
+    #     except:
+    #         pass
+    #     try:
+    #         print(tkey + "user id")
+    #         userapp = db.child("AppliedScheme").order_by_child("userid").equal_to(str(tkey)).get().val()
+    #         all11 = db.child("AppliedScheme").get().val()
+    #         all(map(all11.pop, userapp))
+    #         db.child("AppliedScheme").set(all11)
+    #     except:
+    #         pass
+    #     return render(req, 'redirecthome.html',
+    #                   {"swicon": "success", "swtitle": "Done", "swmsg": "Student Remove Successfully",
+    #                    "path": "adminhome"})
+    #
+    #
+    # else:
+    #     return render(req, 'redirecthome.html',
+    #                   {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
 
 
 def removetrust(req):
-    if ('isAdminLogin' in req.session):
-        tkey = req.POST['tkey']
-        db = connect_firebase()
-        userprofile = None
-        print(tkey + " tt")
-        accno = None
-        try:
-            tt = db.child("Trust").child(str(tkey)).remove()
-            print(tt + " tt")
-
-        except:
-            pass
-
-        try:
-
-            tscheme = db.child("Scheme").order_by_child("trust_id").equal_to(str(tkey)).get().val()
-            alls = db.child("Scheme").get().val()
-            all(map(alls.pop, tscheme))
-            db.child("Scheme").set(alls)
-        except:
-            pass
-        try:
-
-            ascheme = db.child("AppliedScheme").order_by_child("trust_id").equal_to(str(tkey)).get().val()
-            allaps = db.child("AppliedScheme").get().val()
-            all(map(allaps.pop, ascheme))
-            db.child("AppliedScheme").set(allaps)
-        except:
-            pass
-        return render(req, 'redirecthome.html',
-                      {"swicon": "success", "swtitle": "Done", "swmsg": "Trust Remove Successfully",
-                       "path": "adminhome"})
-
-
-    else:
-        return render(req, 'redirecthome.html',
-                      {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
+    return render(req, 'redirecthome.html',
+                  {"swicon": "success", "swtitle": "Done", "swmsg": "Can't Remove ",
+                   "path": "adminhome"})
+    # if ('isAdminLogin' in req.session):
+    #     tkey = req.POST['tkey']
+    #     db = connect_firebase()
+    #     userprofile = None
+    #     print(tkey + " tt")
+    #     accno = None
+    #     try:
+    #         tt = db.child("Trust").child(str(tkey)).remove()
+    #         print(tt + " tt")
+    #
+    #     except:
+    #         pass
+    #
+    #     try:
+    #
+    #         tscheme = db.child("Scheme").order_by_child("trust_id").equal_to(str(tkey)).get().val()
+    #         alls = db.child("Scheme").get().val()
+    #         all(map(alls.pop, tscheme))
+    #         db.child("Scheme").set(alls)
+    #     except:
+    #         pass
+    #     try:
+    #
+    #         ascheme = db.child("AppliedScheme").order_by_child("trust_id").equal_to(str(tkey)).get().val()
+    #         allaps = db.child("AppliedScheme").get().val()
+    #         all(map(allaps.pop, ascheme))
+    #         db.child("AppliedScheme").set(allaps)
+    #     except:
+    #         pass
+    #     return render(req, 'redirecthome.html',
+    #                   {"swicon": "success", "swtitle": "Done", "swmsg": "Trust Remove Successfully",
+    #                    "path": "adminhome"})
+    #
+    #
+    # else:
+    #     return render(req, 'redirecthome.html',
+    #                   {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": ""})
 
 
 def adminupdattrust(request):
@@ -312,8 +313,11 @@ def adminupdattrust(request):
             "name": tname, "contact": tcontact, "mailid": temailid,
             "about": tabout, "address": taddress, "vision": tvision, "password": tpass
         }
-        db = connect_firebase()
-        db.child("Trust").child(tkey).update(data)
+        # db.child("Trust").child(tkey).update(data)
+        Trust.objects.update_or_create(
+            trust_id=tkey,
+            defaults=data
+        )
 
         return render(request, 'redirecthome.html',
                       {"swicon": "success", "swtitle": "Done", "swmsg": "Trust Updated Successfully",
@@ -389,11 +393,8 @@ def changepassword(request):
 
 def updatepassword(request):
     new_password = request.POST['pass']
-    db = connect_firebase()
 
-    db.child("users").child(request.session['userphone']).child("password").set(
-        new_password
-    )
+    User.objects.filter(phone=request.session['currentUser']).update(password=new_password)
 
     return render(request, 'redirecthome.html',
                   {"swicon": "success", "swtitle": "Done", "swmsg": "Password Changed Successfully.",
@@ -498,31 +499,33 @@ def viewtakeaction(request):
         db = connect_firebase()
         applied = OrderedDict()
         amount_received = 0
-        application = db.child("AppliedScheme").child(applicationid).get().val()
-        userprofile = db.child("UserProfile").child(userphone).get().val()
-        cipher = Fernet(Common.encyptionkey)
-        accno = cipher.decrypt(userprofile.get("account_number").encode()).decode()
-        pendingamt = int(userprofile.get("coursefees"))
-        schemeeligibility = db.child("Scheme").child(application.get("scheme_id")).child("eligibility").get().val()
+        # application = db.child("AppliedScheme").child(applicationid).get().val()
+        application = AppliedScheme.objects.get(applicationid=applicationid)
+        # userprofile = db.child("UserProfile").child(userphone).get().val()
+        userprofile = UserProfile.objects.get(phone_number=userphone)
 
-        userappliedscholarship = db.child("AppliedScheme").order_by_child("userid").equal_to(
-            userphone).get().val()
-        del userappliedscholarship[applicationid]
+        pendingamt = int(userprofile.coursefees)
+        # schemeeligibility = db.child("Scheme").child(application.get("scheme_id")).child("eligibility").get().val()
+        schemeeligibility = Scheme.objects.get(id=application.scheme_id).eligibility
+
+        # userappliedscholarship = db.child("AppliedScheme").order_by_child("userid").equal_to(userphone).get().val()
+        userappliedscholarship = AppliedScheme.objects.filter(userid=userphone).exclude(applicationid=applicationid)
+        # del userappliedscholarship[applicationid]
         print(userappliedscholarship)
 
-        for key, value in userappliedscholarship.items():
-            print(key, "is ", value.get("status"))
-            if value.get("status") == "Approve":
+        for value in userappliedscholarship:
+            print(value.applicationid, "is ", value.status)
+            if value.status == "Approve":
                 print(value, "is approve")
-                amount_received += int(value.get("sanctionedamount"))
-                tmp = {key: value}
+                amount_received += int(value.sanctionedamount)
+                tmp = {value.applicationid: value}
                 applied.update(tmp)
                 print(applied)
         pendingamt = pendingamt - amount_received
         return render(request, 'trust_takeaction.html',
-                      {"trustkey": request.session['trustkey'], "trust_val": request.session['trustVal'],
+                      {"trustkey": request.session['trustkey'],
                        "application": application, "applicationid": applicationid,
-                       "userprofile": userprofile, "accno": accno, "appliedscholarship": applied,
+                       "userprofile": userprofile, "appliedscholarship": applied,
                        "amtrec": str(amount_received), "amtpen": str(pendingamt), "schemeeligibility": schemeeligibility
 
                        })
@@ -540,13 +543,18 @@ def updateapplicationstatus(request):
         remark = request.POST['remark']
         mail = request.POST['mail']
         schemename = request.POST['schemename']
-
+        if sancamt=='':
+            sancamt=0
         data = {
             "interviewdate": interviewdate, "status": status, "sanctionedamount": sancamt,
             "remark": remark
         }
-        db = connect_firebase()
-        db.child("AppliedScheme").child(applicationid).update(data)
+        # db = connect_firebase()
+        # db.child("AppliedScheme").child(applicationid).update(data)
+        AppliedScheme.objects.update_or_create(
+            applicationid=applicationid,
+            defaults=data
+        )
 
         title = "ScholarHelp - Status updated fo applicatiod id " + applicationid
         msg = "Your application status for " + schemename + " has been updated to " + status + ".Please login to " \
@@ -564,11 +572,11 @@ def updateapplicationstatus(request):
 
 
 def viewtrustprofile(request):
-    db = connect_firebase()
-    request.session['trustVal'] = db.child("Trust").child(request.session['trustkey']).get().val()
-
+    # db = connect_firebase()
+    # request.session['trustVal'] = db.child("Trust").child(request.session['trustkey']).get().val()
+    trust_val=Trust.objects.get(trust_id=request.session['trustkey'])
     return render(request, 'trust_profile.html',
-                  {"trustkey": request.session['trustkey'], "trust_val": request.session['trustVal']})
+                  {"trustkey": request.session['trustkey'], "trust_val": trust_val})
 
 
 def updatetrustprofile(request):
@@ -585,8 +593,12 @@ def updatetrustprofile(request):
             "name": tname, "contact": tcontact, "mailid": temailid,
             "about": tabout, "address": taddress, "vision": tvision, "password": tpass
         }
-        db = connect_firebase()
-        db.child("Trust").child(request.session['trustkey']).update(data)
+        # db = connect_firebase()
+        # db.child("Trust").child(request.session['trustkey']).update(data)
+        Trust.objects.update_or_create(
+            trust_id=request.session['trustkey'],
+            defaults=data
+        )
 
         return render(request, 'redirecthome.html',
                       {"swicon": "success", "swtitle": "Done", "swmsg": "Profile Updated Successfully",
@@ -727,18 +739,23 @@ def updatescholarhiptofire(req):
     key = req.POST['key']
     strdead = 'sdeadline-' + key
     sdeadline = req.POST[strdead]
-    logo = req.session['trustVal'].get("logo")
+    # logo = req.session['trustVal'].get("logo")
     trust_id = req.session['trustkey']
     db = connect_firebase()
 
     data = {
         "amount": samt, "course": scourse, "eligibility": seligibility, "lastdate": sdeadline,
-        "level": scat, "logo": logo, "name": sname, "trust_id": trust_id
+        "level": scat, "name": sname, "trust_id": trust_id
     }
 
-    db.child("Scheme").child(key).update(
-        data
-    )
+    # db.child("Scheme").child(key).update(
+    #     data
+    # )
+    Scheme.objects.update_or_create(
+            id=key,
+            defaults=data
+        )
+
 
     return render(req, 'redirecthome.html',
                   {"swicon": "success", "swtitle": "Done", "swmsg": "Scholarhip Updated Successfully.",
@@ -851,20 +868,32 @@ def profile_personalDetails(request):
             if(UserProfile.objects.filter(phone_number=userid).exists()):
                 person = UserProfile.objects.get(phone_number=userid)
                 profilefill = User.objects.get(phone=userid).profilefill
+                phone = User.objects.get(phone=userid).phone
+                mail = User.objects.get(phone=userid).mail
+                print("profilefill ", profilefill)
+                if (profilefill != "100"):
+
+                    return render(request, 'user_profileDetails.html',
+                                  {"userprofile": person, "profilefill": profilefill, "phone": phone, "mail": mail
+                                   })
+                else:
+                    return render(request, 'user_completeprofile.html',
+                                  {"userprofile": person, "profilefill": profilefill, "phone": phone, "mail": mail
+                                   })
+            else:
+                person = UserProfile()
+                profilefill = User.objects.get(phone=userid).profilefill
+                phone = User.objects.get(phone=userid).phone
+                mail = User.objects.get(phone=userid).mail
+                if (profilefill != "100"):
+                    return render(request, 'user_profileDetails.html',
+                                  {"userprofile": person, "profilefill": profilefill, "phone": phone, "mail": mail
+                                   })
         except Exception as e:
             print(str(e))
             return render(request, 'redirecthome.html',
                           {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
-        print("profilefill ",profilefill)
-        if (profilefill != "100"):
 
-            return render(request, 'user_profileDetails.html',
-                          {"userprofile": person, "profilefill": profilefill,
-                           })
-        else:
-            return render(request, 'user_completeprofile.html',
-                          {"userprofile": person, "profilefill": profilefill
-                           })
     else:
         return render(request, 'redirecthome.html',
                       {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
@@ -934,6 +963,9 @@ def profile_doc(request):
         try:
             if (UserProfile.objects.filter(phone_number=userid).exists()):
                 userprofile = UserProfile.objects.get(phone_number=userid)
+
+                profilefill = User.objects.get(phone=userid).profilefill
+                print("fill  "+profilefill)
         except Exception as e:
             print(str(e))
             return render(request, 'redirecthome.html',
@@ -975,6 +1007,7 @@ def saveuserpersonalinfo(req):
     bank_name = req.POST['bank_name']
     ifsc_code = req.POST['ifsc_code']
     fill = req.POST['fill']
+    print("Fill ",fill)
     save_draft = req.POST['saveasdraft']
 
     newdata = {
@@ -1205,7 +1238,7 @@ def user_completeprofile(request):
             return render(request, 'redirecthome.html',
                           {"swicon": "error", "swtitle": "Error", "swmsg": "Please try again", "path": "login"})
 
-        if request.session['currentUser'].get("profilefill") == "100":
+        if User.objects.get(phone=request.session['currentUser']).profilefill == "100":
             return render(request, 'user_completeprofileform.html',
                           {"userprofile": userprofile, "currentuser": request.session['currentUser'],
                            })
@@ -1226,7 +1259,6 @@ def applyscholarship(request):  # user has click on apply button add userinfo to
         # userprofile = OrderedDict()
         print(request.session['currentUser'])
         # userprofile = UserProfile.objects.get(phone_number=request.session['currentUser'])
-        userprofile = UserProfile.objects.get(phone_number=request.session['currentUser'])
 
         # db = connect_firebase()
         #
@@ -1239,6 +1271,7 @@ def applyscholarship(request):  # user has click on apply button add userinfo to
 
         if User.objects.get(phone=request.session['currentUser']).profilefill == "100":
 
+            userprofile = UserProfile.objects.get(phone_number=request.session['currentUser'])
             schemeid = request.POST['schemeid_apply']
             amount = request.POST['amount']
             trust_id = request.POST['trust_id']
@@ -1325,18 +1358,15 @@ def pdf_form(request):
 
 def html_form(request):
     if (request.session['isLogin']):
-        userprofile = OrderedDict()
 
-        db = connect_firebase()
-
-        request.session['currentUser'] = db.child("users").child(
-            request.session['currentUser'].get("phone")).get().val()
         try:
-            userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
+            # userprofile = db.child("UserProfile").child(request.session['currentUser'].get("phone")).get().val()
+            userprofile = UserProfile.objects.get(phone_number=request.session['currentUser'])
+            user = User.objects.get(phone=request.session['currentUser'])
         except:
             print("Error")
 
-        if request.session['currentUser'].get("profilefill") == "100":
+        if user.profilefill == "100":
             return render(request, 'result.html',
                           {"userprofile": userprofile, "currentuser": request.session['currentUser'],
                            })

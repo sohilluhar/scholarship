@@ -40,9 +40,9 @@
 
                                     <div class="progress mb-3">
                                         <div class="progress-bar bg-success" role="progressbar"
-                                             aria-valuenow="{{ profilefill |default:''}}" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: {{ profilefill |default:''}}%">
-                                            <span>{{profilefill |default:''}}% Complete</span>
+                                             aria-valuenow="{{ profilefill |default:'0'}}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ profilefill |default:'0'}}%">
+                                            <span>{{profilefill |default:'0'}}% Complete</span>
                                         </div>
                                     </div>
                                 </div>
@@ -134,20 +134,20 @@
                                                     <div class="form-group">
                                                         <label for="email">Email</label>
                                                         <input type="text" name="email" class="form-control" id="email"
-
-                                                               value="{{ currentuser.mail |default:''}}">
+                                                                disabled
+                                                               value="{{ mail |default:''}}">
                                                         <input type="text" name="email" class="form-control" id="email"
                                                                hidden
-                                                               value="{{ currentuser.mail |default:''}}">
+                                                               value="{{ mail |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
                                                     <div class="form-group">
                                                         <label for="phone">Phone Number</label>
+                                                        <input type="text" name="phone" class="form-control" id="phone" disabled
+                                                                value="{{ phone |default:''}}">
                                                         <input type="text" name="phone" class="form-control" id="phone"
-                                                                value="{{ currentuser.phone |default:''}}">
-                                                        <input type="text" name="phone" class="form-control" id="phone"
-                                                               hidden value="{{ currentuser.phone |default:''}}">
+                                                               hidden value="{{phone |default:''}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
@@ -248,7 +248,7 @@
                                                         <label for="account_number">Account Number</label>
                                                         <input type="number" name="account_number" class="form-control"
                                                                id="account_number" placeholder="Enter Account Number"
-                                                               value="{{ accno |default:''}}">
+                                                               value="{{ userprofile.account_number |default:''}}">
                                                     </div>
                                                 </div>
 

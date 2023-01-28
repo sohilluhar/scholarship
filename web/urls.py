@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 
+from web import jsontosql
 from . import views
 
 # from Scholar_Help.views import home, login, register
@@ -81,5 +82,6 @@ urlpatterns = [
     path('adminlogout', views.adminlogout),
     path('', views.home),
     path('pdf', views.pdf_form),
-    path('form', views.html_form)
+    path('form', views.html_form),
+    path('savejson', jsontosql.savejson)
 ]

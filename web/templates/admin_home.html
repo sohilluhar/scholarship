@@ -63,7 +63,7 @@
                                                 <form method="post" action="/adminedittrust">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="tkey" id="tkey"
-                                                           value="{{ trust_id }}"/>
+                                                           value="{{  values.trust_id }}"/>
 
                                                     <button type="submit" class="btn btn-sm">
                                                         <span class="text-info"> Edit</span>

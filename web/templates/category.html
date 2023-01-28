@@ -50,7 +50,7 @@
 
         <div class="books-wrapper search-results">
             <div class="row">
-                {% for key,values in scheme.items %}
+                {% for values in scheme %}
                     <!--to get all scheme type-->
                     {#                        {{ key }}#}
                     {#                        {{ values }}#}
@@ -62,7 +62,7 @@
                                 <h5>{{ values.name }}</h5>
                                 <h6> For <b>{{ values.course }}</b></h6>
                                 <h5>₹ {{ values.amount }}</h5>
-                                <a href="/scheme/{{ key }}">Apply</a>
+                                <a href="/scheme/{{ values.id }}">Apply</a>
                             </div>
                         </div>
                     </div>

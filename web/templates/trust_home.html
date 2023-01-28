@@ -59,7 +59,7 @@
                                     {% for values in applied_schemes %}
 
                                         <tr>
-                                            <td>{{ values.id }}</td>
+                                            <td>{{ values.applicationid }}</td>
                                             <td>{{ values.scheme_name }}
                                             </td>
                                             <td>{{ values.schemeamount }}</td>
@@ -72,7 +72,7 @@
                                                     <input type="hidden" name="userphone" id="userphone"
                                                            value="{{ values.userid }}"/>
                                                     <input type="hidden" name="applicationid" id="applicationid"
-                                                           value="{{ values.id }}"/>
+                                                           value="{{ values.applicationid}}"/>
                                                     {% if  values.status == "Approve" %}
                                                         <button type="submit" class="btn btn-sm">
                                                             <span class="text-info"> View </span>

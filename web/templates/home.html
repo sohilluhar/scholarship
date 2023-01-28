@@ -79,11 +79,11 @@
                 <div class="inner-wrapper">
                     <!-- SLIDER -->
                     <div class="books-wrapper slider">
-                        {% for key,values in all_trusts.items %}
+                        {% for values in all_trusts %}
                             {#                            <h4>{{ values }}</h4>#}
                             {#                            <h4>{{ key }}</h4>#}
                             <div class="wrapper">
-                                <a href="./trust/{{ key }}"
+                                <a href="./trust/{{ values.trust_id }}"
                                    target="_blank">
                                     <img class="book-image img-responsive" src="{{ values.logo }}" alt="">
                                 </a>
@@ -191,7 +191,7 @@
 
             <div class="books-wrapper">
                 <div class="row">
-                    {% for key,values in scheme.items %}
+                    {% for values in scheme %}
                         <!--to get all scheme type-->
                         {#                        {{ key }}#}
                         {#                        {{ values }}#}
@@ -203,7 +203,7 @@
                                     <h5>{{ values.name }}</h5>
                                     <h6> For <b>{{ values.course }}</b></h6>
                                     <h5>₹ {{ values.amount }}</h5>
-                                    <a href="/scheme/{{ key }}">Apply</a>
+                                    <a href="/scheme/{{ values.id }}">Apply</a>
                                 </div>
                             </div>
                         </div>

@@ -69,6 +69,32 @@ def create_scheme(request):
         )
         scheme.save()
 
+************************************
+Mapping
+************************************
+key=scheme.id
+
+20191201=4
+20191202=5
+20191205=6
+20191208=7
+20191210=8
+20191212=9
+20191213=10
+20191214=10
+20191215=11
+20191216=11
+20191217=12
+20191218=12
+1581281740089=13
+1581316631086=14
+1581609067002=15
+1583248942104=16
+1600281799465=17
+1662353555070=18
+************************************
+
+
 ----------------------------
 Trust (DONE)
 ----------------------------
@@ -183,3 +209,12 @@ class User(models.Model):
 class AppliedUserScheme(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     applied_scheme = models.CharField(max_length=255)
+
+
+
+        user.mail = data['mail']
+        user.name = data['name']
+        user.password = data['password']
+        user.adhar_no = data['adhar_no']
+        user.profilefill = data['profilefill']
+        user.save()
